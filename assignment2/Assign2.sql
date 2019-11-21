@@ -12,21 +12,23 @@ DROP TABLE a2jnc_students_courses CASCADE CONSTRAINTS;
 DROP TABLE a2jnc_prog_courses CASCADE CONSTRAINTS;
 DROP TABLE a2jnc_prog_students CASCADE CONSTRAINTS;
 DROP TABLE a2advisors CASCADE CONSTRAINTS;
-
+DROP TABLE a2professors CASCADE CONSTRAINTS;
+DROP TABLE a2professors CASCADE CONSTRAINTS;
+DROP TABLE a2sections CASCADE CONSTRAINTS;
 
 CREATE TABLE a2departments (
     deptCode NUMBER(3) GENERATED AS IDENTITY CONSTRAINT deptCode_pk PRIMARY KEY,
-    deptName VARCHAR2(30) CONSTRAINT department_name_nn NOT NULL,
-    OfficeNumber NUMBER(4) CONSTRAINT OfficeNumber_nn NOT NULL,
+    deptName VARCHAR2(30) CONSTRAINT department_name_req NOT NULL,
+    OfficeNumber NUMBER(4) CONSTRAINT OfficeNumber_req NOT NULL,
     DisplayOrder NUMBER(1, 0)
     
 );
 
 CREATE TABLE a2term (
-    term_code NUMBER(4, 0) GENERATED AS IDENTITY CONSTRAINT term_code_pk PRIMARY KEY,
-    term_name VARCHAR2(15) CONSTRAINT term_name_nn NOT NULL,
-    start_date DATE DEFAULT sysdate CONSTRAINT start_date_nn NOT NULL,
-    end_date DATE
+    termCode NUMBER(4, 0) GENERATED AS IDENTITY CONSTRAINT term_code_pk PRIMARY KEY,
+    termName VARCHAR2(15) CONSTRAINT term_name_nn NOT NULL,
+    startDate DATE DEFAULT sysdate CONSTRAINT start_date_nn NOT NULL,
+    endDate DATE
 );
 
 CREATE TABLE a2employees (
@@ -151,12 +153,11 @@ CREATE TABLE a2jnc_prog_students (
 
 CREATE TABLE a2advisors (
 
-    empID NUMBER(5, 0),
+    empID NUMBER(5, 0) CONSTRAINT a2advisors_empID_pk PRIMARY KEY,
     isActive NUMBER(1, 0) DEFAULT 1,
         CONSTRAINT a2advisors_isActive_ck CHECK(isActive IN(1, 0)),  
-        CONSTRAINT a2advisors_empID_pk PRIMARY KEY,
         CONSTRAINT a2advisors_empID_fk FOREIGN KEY(empID)
-            REFERENCES employees(empID)
+            REFERENCES a2employees(empID)
 
 );
 
@@ -168,9 +169,9 @@ CREATE TABLE a2professors (
         CONSTRAINT a2professors_isActive_ck CHECK(isActive IN(1, 0)),
         CONSTRAINT a2professors_empID_pk PRIMARY KEY(empID),
         CONSTRAINT a2professors_empID_fk FOREIGN KEY(empID)
-            REFERENCES employees(empID),
+            REFERENCES a2employees(empID),
         CONSTRAINT a2professors_deptCode_fk FOREIGN KEY(deptCode)
-            REFERENCES departments(deptCode)
+            REFERENCES a2departments(deptCode)
 );
 
 CREATE TABLE a2sections (
@@ -179,5 +180,11 @@ CREATE TABLE a2sections (
     sectionLetter CHAR(3),
     courseCode NUMBER(5, 0),
     termCode NUMBER(4, 0),
-    profID NUMBER(5, 0)
+    profID NUMBER(5, 0),
+        CONSTRAINT a2sections_courseCode_fk FOREIGN KEY(courseCode)
+            REFERENCES a2courses(courseCode),
+        CONSTRAINT a2sections_termCode_fk FOREIGN KEY(termCode)
+            REFERENCES a2term(termCode),
+        CONSTRAINT a2sections_profID_fk FOREIGN KEY(profID)
+            REFERENCES a2professors(empID)
 );
