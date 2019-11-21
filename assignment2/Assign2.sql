@@ -179,6 +179,5 @@ CREATE TABLE a2sections (
     sectionLetter CHAR(3),
     courseCode NUMBER(5, 0),
     termCode NUMBER(4, 0),
-    profID NUMBER(5, 0),
-
+    profID NUMBER(5, 0)
 );
