@@ -1,10 +1,21 @@
-DROP TABLE departments CASCADE CONSTRAINTS;
-DROP TABLE term CASCADE CONSTRAINTS;
-DROP TABLE employees CASCADE CONSTRAINTS;
-DROP TABLE coutries CASCADE CONSTRAINTS;
+-- TODO: find out how to check for existance of a table before 
+-- dropping it
+DROP TABLE a2departments CASCADE CONSTRAINTS;
+DROP TABLE a2term CASCADE CONSTRAINTS;
+DROP TABLE a2employees CASCADE CONSTRAINTS;
+DROP TABLE a2continents CASCADE CONSTRAINTS;
+DROP TABLE a2countries CASCADE CONSTRAINTS;
+DROP TABLE a2courses CASCADE CONSTRAINTS;
+DROP TABLE a2programs CASCADE CONSTRAINTS;
+DROP TABLE a2students CASCADE CONSTRAINTS;
+DROP TABLE a2jnc_students_courses CASCADE CONSTRAINTS;
+DROP TABLE a2jnc_prog_courses CASCADE CONSTRAINTS;
+DROP TABLE a2jnc_prog_students CASCADE CONSTRAINTS;
+DROP TABLE a2advisors CASCADE CONSTRAINTS;
+
 
 CREATE TABLE a2departments (
-    deptCode NUMBER(4) GENERATED AS IDENTITY CONSTRAINT deptCode_pk PRIMARY KEY,
+    deptCode NUMBER(3) GENERATED AS IDENTITY CONSTRAINT deptCode_pk PRIMARY KEY,
     deptName VARCHAR2(30) CONSTRAINT department_name_nn NOT NULL,
     OfficeNumber NUMBER(4) CONSTRAINT OfficeNumber_nn NOT NULL,
     DisplayOrder NUMBER(1, 0)
@@ -12,7 +23,7 @@ CREATE TABLE a2departments (
 );
 
 CREATE TABLE a2term (
-    term_code NUMBER(4) GENERATED AS IDENTITY CONSTRAINT term_code_pk PRIMARY KEY,
+    term_code NUMBER(4, 0) GENERATED AS IDENTITY CONSTRAINT term_code_pk PRIMARY KEY,
     term_name VARCHAR2(15) CONSTRAINT term_name_nn NOT NULL,
     start_date DATE DEFAULT sysdate CONSTRAINT start_date_nn NOT NULL,
     end_date DATE
@@ -47,28 +58,27 @@ CREATE TABLE a2continents (
 
 CREATE TABLE a2countries (
 
-    CountryCode NUMBER(3, 0) GENERATED AS IDENTITY CONSTRAINT CountryCode_pk PRIMARY KEY,
-    CountryName VARCHAR2(56) CONSTRAINT CountryName_nn NOT NULL
+    countryCode NUMBER(3, 0) GENERATED AS IDENTITY CONSTRAINT CountryCode_pk PRIMARY KEY,
+    countryName VARCHAR2(56) CONSTRAINT CountryName_nn NOT NULL
         CONSTRAINT CountryName_uk UNIQUE,
-    ContinentID NUMBER(1, 0) CONSTRAINT ContinentID_nn NOT NULL,
-    IsActive NUMBER(1, 0) DEFAULT 1 CONSTRAINT IsActive_nn NOT NULL
-        CONSTRAINT IsActive_ck CHECK(IsActive IN(1, 0)),
-        
-        CONSTRAINT ContinentID_fk FOREIGN KEY(ContinentID)
-            REFERENCES a2continents(ContinentID)
+    continentID NUMBER(1, 0) CONSTRAINT ContinentID_nn NOT NULL,
+    isActive NUMBER(1, 0) DEFAULT 1 CONSTRAINT isActive_nn NOT NULL
+        CONSTRAINT isActive_ck CHECK(IsActive IN(1, 0)),
+        CONSTRAINT a2countries_continentID_fk FOREIGN KEY(continentID)
+            REFERENCES a2continents(continentID)
 );
 
 CREATE TABLE a2courses (
 
     courseCode NUMBER(5, 0) GENERATED AS IDENTITY CONSTRAINT CourseCode_pk PRIMARY KEY,
-    CourseName VARCHAR(30) CONSTRAINT CourseName_nn NOT NULL,
-    isAvailable NUMBER(1, 0) DEFAULT 1 CONSTRAINT isAvailable_nn NOT NULL
-        CONSTRAINT isAvailable_ck CHECK(isAvaiable IN(1, 0)),
-    desc VARCHAR2(38)
+    courseName VARCHAR(30) CONSTRAINT CourseName_nn NOT NULL,
+    isAvailable NUMBER(1, 0) DEFAULT 1 CONSTRAINT isAvailable_nn NOT NULL,
+    info VARCHAR2(38),
+        CONSTRAINT a2courses_isAvailable_ck CHECK(isAvailable IN(1, 0))
     
 );
 
-DROP TABLE a2programs CASCADE CONSTRAINTS;
+
 
 CREATE TABLE a2programs (
 
@@ -99,25 +109,31 @@ CREATE TABLE a2students (
             REFERENCES a2countries(CountryCode)
 );
 
+-- constraint names for this table were a little too long...
+-- I was forced to shorten the identifiers
+
+-- for ex:
+-- instead of: a2jnc_students_courses_isActive_req
+-- it was changed to: a2stud_courses_isActive_req
 CREATE TABLE a2jnc_students_courses (
 
-    courseCode NUMBER(5, 0) CONSTRAINT CourseCode_pk PRIMARY KEY,
-    studentID NUMBER(5, 0) CONSTRAINT CourseCode_pk PRIMARY KEY,
-    isActive NUMBER(1, 0) DEFAULT 1 CONSTRAINT a2jnc_students_courses_isActive_nn NOT NULL
-        CONSTRAINT a2jnc_students_courses_isActive_ck CHECK(IsActive IN(1, 0)),
-        CONSTRAINT a2jnc_students_courses_fk FOREIGN KEY(courseCode)
+    courseCode NUMBER(5, 0),
+    studentID NUMBER(5, 0),
+    isActive NUMBER(1, 0) DEFAULT 1 CONSTRAINT a2stud_courses_isActive_req NOT NULL
+        CONSTRAINT a2stud_courses_isActive_ck CHECK(IsActive IN(1, 0)),
+        CONSTRAINT a2stud_courses_courseCode_fk FOREIGN KEY(courseCode)
             REFERENCES a2courses(courseCode),
-        CONSTRAINT a2jnc_students_courses_fk FOREIGN KEY(studentID)
+        CONSTRAINT a2stud_courses_studentID_fk FOREIGN KEY(studentID)
             REFERENCES a2students(studentID)
 
 );
 
 CREATE TABLE a2jnc_prog_courses (
 
-    progCourseID NUMBER(5) GENERATED AS IDENTITY CONSTRAINT a2jnc_prog_courses_progCourseID_pk PRIMARY KEY,
-    progCode NUMBER(5, 0) CONSTRAINT a2jnc_prog_courses_progCode_nn NOT NULL,
+    progCourseID NUMBER(5) GENERATED AS IDENTITY CONSTRAINT a2prog_courses_progCourseID_pk PRIMARY KEY,
+    progCode NUMBER(5, 0) CONSTRAINT a2prog_courses_progCode_nn NOT NULL,
     courseCode NUMBER(5, 0),
-    isActive NUMBER(1, 0) DEFAULT 1 CONSTRAINT a2jnc_prog_courses_isActive_nn NOT NULL
+    isActive NUMBER(1, 0) DEFAULT 1 CONSTRAINT a2prog_courses_isActive_nn NOT NULL
 
 );
 
@@ -126,36 +142,43 @@ CREATE TABLE a2jnc_prog_students (
     progCode    NUMBER(5, 0),
     studentID   NUMBER(5, 0),
     isActive NUMBER(1, 0) DEFAULT 1,
-        CONSTRAINT a2jnc_prog_students_isActive_ck CHECK(IsActive IN(1, 0)),      
-        CONSTRAINT a2jnc_prog_students_progCode_fk FOREIGN KEY(progCode)
+        CONSTRAINT a2prog_students_isActive_ck CHECK(IsActive IN(1, 0)),      
+        CONSTRAINT a2prog_students_progCode_fk FOREIGN KEY(progCode)
             REFERENCES a2programs(progCode),
-        CONSTRAINT a2jnc_prog_students_studentID_fk FOREIGN KEY(studentID)
+        CONSTRAINT a2prog_students_studentID_fk FOREIGN KEY(studentID)
             REFERENCES a2students(studentID)
 );
 
+CREATE TABLE a2advisors (
 
+    empID NUMBER(5, 0),
+    isActive NUMBER(1, 0) DEFAULT 1,
+        CONSTRAINT a2advisors_isActive_ck CHECK(isActive IN(1, 0)),  
+        CONSTRAINT a2advisors_empID_pk PRIMARY KEY,
+        CONSTRAINT a2advisors_empID_fk FOREIGN KEY(empID)
+            REFERENCES employees(empID)
 
+);
 
+CREATE TABLE a2professors (
 
-SELECT length('Education, Community   Social Services')
-    FROM dual;
+    empID NUMBER(5, 0),
+    deptCode NUMBER(3, 0),
+    isActive NUMBER(1, 0),
+        CONSTRAINT a2professors_isActive_ck CHECK(isActive IN(1, 0)),
+        CONSTRAINT a2professors_empID_pk PRIMARY KEY(empID),
+        CONSTRAINT a2professors_empID_fk FOREIGN KEY(empID)
+            REFERENCES employees(empID),
+        CONSTRAINT a2professors_deptCode_fk FOREIGN KEY(deptCode)
+            REFERENCES departments(deptCode)
+);
 
+CREATE TABLE a2sections (
 
-CREATE TABLE locations
-    ( location_id    NUMBER(4)
-    , street_address VARCHAR2(40)
-    , postal_code    VARCHAR2(12)
-    , city       VARCHAR2(30)
-	CONSTRAINT     loc_city_nn  NOT NULL
-    , state_province VARCHAR2(25)
-    , country_id     CHAR(2)
-    ) ;
-    
-    
-    CREATE TABLE departments
-    ( department_id    NUMBER(4)
-    , department_name  VARCHAR2(30)
-	CONSTRAINT  dept_name_nn  NOT NULL
-    , manager_id       NUMBER(6)
-    , location_id      NUMBER(4)
-    ) ;
+    sectionID NUMBER(4),
+    sectionLetter CHAR(3),
+    courseCode NUMBER(5, 0),
+    termCode NUMBER(4, 0),
+    profID NUMBER(5, 0),
+
+);
