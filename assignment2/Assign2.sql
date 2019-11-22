@@ -62,7 +62,7 @@ CREATE TABLE a2employees (
 
 );
 
--- extra table --
+---- extra table ----
 CREATE TABLE a2lkp_continents (
 
     continentID NUMBER(1, 0)    GENERATED AS IDENTITY CONSTRAINT a2lkp_continents_pk PRIMARY KEY,
