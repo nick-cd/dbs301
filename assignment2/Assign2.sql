@@ -245,3 +245,89 @@ CREATE TABLE a2sections (
         CONSTRAINT a2sections_profID_fk FOREIGN KEY(profID)
             REFERENCES a2professors(empID)
 );
+
+-- TODO: add descriptions for each course
+Prompt Semester 1 courses(CPD and CPA)
+
+INSERT INTO a2courses VALUES (
+	'IPC144', 'Introduction to Programming Using C', 1, NULL
+);
+
+INSERT INTO a2courses VALUES (
+	'APC100', 'Applied Professional Communications', 0, NULL
+);
+
+INSERT INTO a2courses VALUES (
+	'COM101', 'Communicating Across Contexts', 1, NULL
+);
+
+INSERT INTO a2courses VALUES (
+	'CPR101', 'Computer Principles for Programmers', 1, NULL
+);
+
+INSERT INTO a2courses VALUES (
+	'ULI101', 'Introduction to UNIX/Linux and the Internet', 1, NULL
+);
+
+
+Prompt Semester 2 courses(CPD and CPA)
+
+INSERT INTO a2courses VALUES (
+	'DBS201', 'Introduction to Database Design and SQL', 1, NULL
+);
+
+INSERT INTO a2courses VALUES (
+	'DCF255', 'Data Communications Fundamentals', 1, NULL
+);
+
+INSERT INTO a2courses VALUES (
+	'OOP244', 'Introduction to Object Oriented Programming', 1, NULL
+);
+
+INSERT INTO a2courses VALUES (
+	'WEB222', 'Web Programming Principles', 1, NULL
+);
+
+
+Prompt Semester 3 courses(CPD and CPA)
+
+INSERT INTO a2courses VALUES (
+	'DBS301', 'Database Design || and SQL Using Oracle', 1, NULL
+);
+
+INSERT INTO a2courses VALUES (
+	'OOP345', 'Object-Oriented Software Development Using C++', 1, NULL
+);
+
+INSERT INTO a2courses VALUES (
+	'SYS366', 'Requirements Gathering Using OO Models', 1, NULL
+);
+
+INSERT INTO a2courses VALUES (
+	'WEB322', 'Web Programming Tools and Framework' , 1, NULL
+);
+
+-- TODO: add the rest of the CPA program
+Prompt Semester 4 Courses(CPD and CPA)
+
+INSERT INTO a2courses VALUES (
+	'BCI433', 'IBM Business Computing', 1, NULL
+);
+
+INSERT INTO a2courses VALUES (
+	'EAC397', 'Business Report Writing', 1, NULL
+);
+
+INSERT INTO a2courses VALUES (
+	'EAC594', 'Business Communication for the Digital Workplace', 1, NULL
+);
+
+INSERT INTO a2courses VALUES (
+	'JAC444', 'Introduction to Java for C++ Programmers', 1, NULL
+);
+
+Prompt Semester 4 professional option(CPD)
+
+INSERT INTO a2courses VALUES (
+	'UNX511', 'UNIX Systems Programming', 1, NULL
+);
