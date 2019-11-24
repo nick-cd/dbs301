@@ -3,7 +3,6 @@
 DROP TABLE a2departments CASCADE CONSTRAINTS;
 DROP TABLE a2term CASCADE CONSTRAINTS;
 DROP TABLE a2employees CASCADE CONSTRAINTS;
-DROP TABLE a2continents CASCADE CONSTRAINTS;
 DROP TABLE a2countries CASCADE CONSTRAINTS;
 DROP TABLE a2courses CASCADE CONSTRAINTS;
 DROP TABLE a2programs CASCADE CONSTRAINTS;
@@ -13,9 +12,7 @@ DROP TABLE a2jnc_prog_courses CASCADE CONSTRAINTS;
 DROP TABLE a2jnc_prog_students CASCADE CONSTRAINTS;
 DROP TABLE a2advisors CASCADE CONSTRAINTS;
 DROP TABLE a2professors CASCADE CONSTRAINTS;
-DROP TABLE a2professors CASCADE CONSTRAINTS;
 DROP TABLE a2sections CASCADE CONSTRAINTS;
-DROP TABLE a2lkp_continents CASCADE CONSTRAINTS;
 
 
 -- NOTE: Display order is a column to be used as a ordering
@@ -30,8 +27,8 @@ Prompt Creating Departments Table
 CREATE TABLE a2departments (
 
     deptCode        NUMBER(3, 0)    GENERATED AS IDENTITY(START WITH 1) CONSTRAINT a2departments_deptCode_pk PRIMARY KEY,
-    deptName        VARCHAR2(30)    CONSTRAINT a2departments_deptName_req NOT NULL,
-    officeNumber    NUMBER(4, 0)    CONSTRAINT a2departments_officeNumber_req NOT NULL,
+    deptName        VARCHAR2(45)    CONSTRAINT a2departments_deptName_req NOT NULL,
+    officeNumber    NUMBER(4, 0),
     displayOrder    NUMBER(1, 0)
     
 );
@@ -59,8 +56,8 @@ CREATE TABLE a2employees (
     isActive    NUMBER(1, 0) DEFAULT 1 CONSTRAINT a2employees_isActive_req NOT NULL,
     sin         NUMBER(9, 0) CONSTRAINT a2employees_sin_req NOT NULL,
     dob         DATE         CONSTRAINT a2employees_dob_req NOT NULL,
-    email       VARCHAR2(25) CONSTRAINT a2employees_email_req NOT NULL,
-    phone       VARCHAR2(12) CONSTRAINT a2employees_phone_req NOT NULL,
+    email       VARCHAR2(35) CONSTRAINT a2employees_email_req NOT NULL,
+    phone       VARCHAR2(18),
         
         CONSTRAINT a2employees_sin_unq UNIQUE(sin),
         CONSTRAINT a2employees_email_unq UNIQUE(email),
@@ -331,3 +328,124 @@ Prompt Semester 4 professional option(CPD)
 INSERT INTO a2courses VALUES (
 	'UNX511', 'UNIX Systems Programming', 1, NULL
 );
+
+
+Prompt Employees insertions
+
+INSERT INTO a2employees VALUES (
+	DEFAULT, 'Clint', 'MacDonald', NULL, NULL, 1, 123456789, 
+		to_date('1999-03-10', 'yyyy-mm-dd'), 
+		'clint.macdonald@senecacollege.ca', '416.491.5050e24158'
+);
+
+INSERT INTO a2employees VALUES (
+	DEFAULT, 'Ron', 'Tarr', NULL, NULL, 1, 444555666, 
+		to_date('1990-09-20', 'yyyy-mm-dd'),
+		'ron.tarr@senecacollege.ca', '416.491.5050e24026'
+);
+
+INSERT INTO a2employees VALUES (
+	DEFAULT, 'Robert' , 'Stewart', NULL, NULL, 1, 111222333,
+		to_date('1986-04-29', 'yyyy-mm-dd'), 
+		'rob.stewart@senecacollege.ca', '416.491.5050e22752'
+);
+
+INSERT INTO a2employees VALUES (
+	DEFAULT, 'Nathan', 'Misener', NULL, NULL, 1, 67890123, 
+		to_date('1990-07-12', 'yyyy-mm-dd'),
+		'nathan.misener@senecacollege.ca', NULL
+);
+
+INSERT INTO a2employees VALUES (
+	DEFAULT, 'Asam', 'Gulaid', NULL, NULL, 1, 098765432,
+		to_date('1867-07-01', 'yyyy-mm-dd'),
+		'asam.gulaid1@senecacollege.ca', '647.470.6438'
+);
+
+INSERT INTO a2employees VALUES (
+	DEFAULT, 'Stanley', 'Ukah', NULL, NULL, 1, 999888777,
+		to_date('1979-08-15', 'yyyy-mm-dd'),
+		'stanley.ukah1@senecacollege.ca', '416.491.5050e33212'
+);
+
+INSERT INTO a2employees VALUES (
+	DEFAULT, 'Kadeem', 'Best', NULL, NULL, 1, 555666777,
+		to_date('1985-04-12', 'yyyy-mm-dd'),
+		'kadeem.best@senecacollege.ca', NULL
+);
+
+INSERT INTO a2employees VALUES (
+	DEFAULT, 'James', 'Mwangi', NULL, NULL, 1, 111111111,
+		to_date('1970-03-18', 'yyyy-mm-dd'),
+		'james.mwangi@senecacollege.ca', '416.491.5050e22553'
+);
+
+INSERT INTO a2employees VALUES (
+	DEFAULT, 'Marc', 'Menard', NULL, NULL, 1, 222222222,
+		to_date('1965-07-13', 'yyyy-mm-dd'), 
+		'marc.menard@senecacollege.ca', '416.491.5050e26929'
+);
+
+Prompt Departments insertions
+
+INSERT INTO a2departments VALUES (
+	DEFAULT, 'School of info and Comm Tech-SY', NULL, NULL
+);
+
+INSERT INTO a2departments VALUES (
+	DEFAULT, 'School of Software Design and Data Science', NULL, NULL
+);
+
+INSERT INTO a2departments VALUES (
+	DEFAULT, 'School of English and Liberal Studies', NULL, NULL
+);
+
+
+Prompt Professor insertions
+
+-- Clint
+INSERT INTO a2professors VALUES (
+	1, 1, 1
+);
+
+-- Ron
+INSERT INTO a2professors VALUES (
+	2, 1, 1
+);
+
+-- Robert
+INSERT INTO a2professors VALUES (
+	3, 1, 1
+);
+
+-- Nathan
+INSERT INTO a2professors VALUES (
+	4, 1, 1
+);
+
+-- Asam
+INSERT INTO a2professors VALUES (
+	5, 1, 1
+);
+
+-- Stanley
+INSERT INTO a2professors VALUES (
+	6, 1, 1
+);
+
+-- Kadeem
+INSERT INTO a2professors VALUES (
+	7, 2, 1
+);
+
+-- James
+INSERT INTO a2professors VALUES (
+	8, 1, 1
+);
+
+-- Marc
+INSERT INTO a2professors VALUES (
+	9, 3, 1
+);
+
+
