@@ -29,10 +29,12 @@ Prompt Creating Departments Table
 
 CREATE TABLE a2departments (
 
-    deptCode        NUMBER(3, 0)    GENERATED AS IDENTITY(START WITH 1) CONSTRAINT a2departments_deptCode_pk PRIMARY KEY,
-    deptName        VARCHAR2(55)    CONSTRAINT a2departments_deptName_req NOT NULL,
-    officeNumber    NUMBER(4, 0),
-    displayOrder    NUMBER(1, 0)
+    deptCode        INTEGER         GENERATED AS IDENTITY(START WITH 1),
+    deptName        VARCHAR2(55)    NOT NULL,
+    officeNumber    INTEGER,
+    displayOrder    INTEGER,
+    
+        CONSTRAINT a2departments_deptCode_pk PRIMARY KEY
     
 );
 
@@ -40,28 +42,30 @@ Prompt Creating Terms Table
 
 CREATE TABLE a2term (
 
-    termCode    NUMBER(5, 0)    GENERATED AS IDENTITY CONSTRAINT a2term_termCode_pk PRIMARY KEY,
-    termName    VARCHAR2(11)    CONSTRAINT a2term_termName_req NOT NULL,
-    startDate   DATE            CONSTRAINT a2term_startDate_req NOT NULL,
-    endDate     DATE            CONSTRAINT a2term_endDate_req NOT NULL
+    termCode    INTEGER         GENERATED AS IDENTITY,
+    termName    VARCHAR2(11)    NOT NULL,
+    startDate   DATE            NOT NULL,
+    endDate     DATE            NOT NULL,
     
+        CONSTRAINT a2term_termCode_pk PRIMARY KEY(termCode)
 );
 
 Prompt Creating Employees Table
 
 CREATE TABLE a2employees (
 
-    empID       NUMBER(5, 0) GENERATED AS IDENTITY CONSTRAINT emp_ID_pk PRIMARY KEY,
+    empID       INTEGER         GENERATED AS IDENTITY,
     firstName   VARCHAR2(25),
-    lastName    VARCHAR2(25) CONSTRAINT a2employees_lastName_req NOT NULL,
+    lastName    VARCHAR2(25)    NOT NULL,
     prefix      VARCHAR2(5),
     suffix      VARCHAR2(5),
-    isActive    NUMBER(1, 0) DEFAULT 1 CONSTRAINT a2employees_isActive_req NOT NULL,
-    sin         NUMBER(9, 0) CONSTRAINT a2employees_sin_req NOT NULL,
-    dob         DATE         CONSTRAINT a2employees_dob_req NOT NULL,
-    email       VARCHAR2(35) CONSTRAINT a2employees_email_req NOT NULL,
+    isActive    INTEGER         DEFAULT 1 CONSTRAINT a2employees_isActive_req NOT NULL,
+    sin         INTEGER         NOT NULL,
+    dob         DATE            NOT NULL,
+    email       VARCHAR2(35)    NOT NULL,
     phone       VARCHAR2(18),
         
+        CONSTRAINT emp_ID_pk PRIMARY KEY,
         CONSTRAINT a2employees_sin_unq UNIQUE(sin),
         CONSTRAINT a2employees_email_unq UNIQUE(email),
         CONSTRAINT a2employees_phone_unq UNIQUE(phone)
@@ -73,7 +77,7 @@ Prompt Creating Advisors Table
 
 CREATE TABLE a2advisors (
 
-    empID       NUMBER(5, 0) CONSTRAINT a2advisors_empID_req NOT NULL,
+    empID       NUMBER(5, 0),
     isActive    NUMBER(1, 0) DEFAULT 1,
 
         CONSTRAINT a2advisors_empID_pk PRIMARY KEY(empID),
@@ -88,10 +92,10 @@ Prompt Creating Countries Table
 
 CREATE TABLE a2countries (
 
-    countryCode CHAR(2),
-    countryName VARCHAR2(56)    CONSTRAINT a2countries_countryName_req NOT NULL,
-    continent   CHAR(2)         CONSTRAINT a2countries_continentID_req NOT NULL,
-    isActive    NUMBER(1, 0)    DEFAULT 1 CONSTRAINT a2countries_isActive_req NOT NULL,
+    countryCode     CHAR(2),
+    countryName     VARCHAR2(56)    NOT NULL,
+    continent       CHAR(2)         NOT NULL,
+    isActive        NUMBER(1, 0)    DEFAULT 1 NOT NULL,
         
         CONSTRAINT a2countries_countryCode_pk PRIMARY KEY(countryCode),
         CONSTRAINT a2countries_countryName_unq UNIQUE(countryName),
@@ -103,10 +107,10 @@ Prompt Creating Courses Table
 
 CREATE TABLE a2courses (
 
-    courseCode  VARCHAR2(8),
-    courseName  VARCHAR2(50)    CONSTRAINT a2courses_courseName_req NOT NULL,
-    isAvailable NUMBER(1, 0)    DEFAULT 1 CONSTRAINT a2courses_isAvailable_req NOT NULL,
-    description VARCHAR2(38),
+    courseCode      VARCHAR2(8),
+    courseName      VARCHAR2(50)    NOT NULL,
+    isAvailable     NUMBER(1, 0)    DEFAULT 1 NOT NULL,
+    description     VARCHAR2(38),
     
         CONSTRAINT a2courses_courseCode_pk PRIMARY KEY(courseCode),
         CONSTRAINT a2courses_isAvailable_chk CHECK(isAvailable IN(1, 0))
@@ -118,10 +122,10 @@ Prompt Creating Programs Table
 CREATE TABLE a2programs (
 
     progCode    CHAR(3),
-    progName    VARCHAR2(55)    CONSTRAINT a2programs_progName_req NOT NULL,
-    lengthYears NUMBER(1, 0)    CONSTRAINT a2programs_lengthYears_req NOT NULL,
-    isCurrent   NUMBER(1, 0)    DEFAULT 1 CONSTRAINT a2programs_isCurrent_req NOT NULL,
-    deptCode    NUMBER(4)       CONSTRAINT a2programs_depCode_req NOT NULL,
+    progName    VARCHAR2(55)    NOT NULL,
+    lengthYears NUMBER(1, 0)    NOT NULL,
+    isCurrent   NUMBER(1, 0)    DEFAULT 1 NOT NULL,
+    deptCode    NUMBER(4)       NOT NULL,
     
         CONSTRAINT a2programs_progCode_pk PRIMARY KEY(progCode),
         CONSTRAINT a2programs_deptCode_fk FOREIGN KEY(deptCode)
@@ -134,16 +138,17 @@ Prompt Creating Students Table
 
 CREATE TABLE a2students (
 
-    studentID   NUMBER(5, 0)    GENERATED AS IDENTITY CONSTRAINT a2students_studentID_pk PRIMARY KEY,
-    firstName   VARCHAR2(20)    CONSTRAINT a2students_firstName_req NOT NULL,
-    lastName    VARCHAR2(25)    CONSTRAINT a2students_lastName_req NOT NULL,
-    dob         DATE            CONSTRAINT a2students_dob_req NOT NULL,
+    studentID   NUMBER(5, 0)    GENERATED AS IDENTITY,
+    firstName   VARCHAR2(20)    NOT NULL,
+    lastName    VARCHAR2(25)    NOT NULL,
+    dob         DATE            NOT NULL,
     gender      CHAR(1),
-    email       VARCHAR2(25)    CONSTRAINT a2students_email_req NOT NULL,
+    email       VARCHAR2(25)    NOT NULL,
     homeCountry CHAR(2),
     phone       VARCHAR2(14),
     advisorID   NUMBER(5, 0),
     
+        CONSTRAINT a2students_studentID_pk PRIMARY KEY,
         CONSTRAINT a2students_homeCountry_fk FOREIGN KEY(homeCountry)
             REFERENCES a2countries(countryCode),
         CONSTRAINT a2students_advisorID_fk FOREIGN KEY(advisorID)
@@ -164,7 +169,8 @@ CREATE TABLE a2jnc_students_courses (
 
     courseCode      VARCHAR2(8),
     studentID       NUMBER(5, 0),
-    isActive        NUMBER(1, 0) DEFAULT 1 CONSTRAINT a2stud_courses_isActive_req NOT NULL,
+    mark            INTEGER,
+    isActive        NUMBER(1, 0) DEFAULT 1 NOT NULL,
 
         CONSTRAINT a2stud_courses_pk PRIMARY KEY(courseCode, studentID),
         CONSTRAINT a2stud_courses_isActive_chk CHECK(IsActive IN(1, 0)),
@@ -179,11 +185,12 @@ Prompt Creating Prog_Courses Table
 
 CREATE TABLE a2jnc_prog_courses (
 
-    progCourseID    NUMBER(5, 0)    GENERATED AS IDENTITY CONSTRAINT a2prog_courses_progCourseID_pk PRIMARY KEY,
-    progCode        CHAR(3)         CONSTRAINT a2prog_courses_progCode_req NOT NULL,
+    progCourseID    NUMBER(5, 0)    GENERATED AS IDENTITY,
+    progCode        CHAR(3)         NOT NULL,
     courseCode      VARCHAR2(8),
-    isActive        NUMBER(1, 0)    DEFAULT 1 CONSTRAINT a2prog_courses_isActive_req NOT NULL,
+    isActive        NUMBER(1, 0)    DEFAULT 1 NOT NULL,
 
+        CONSTRAINT a2prog_courses_progCourseID_pk PRIMARY KEY,
         CONSTRAINT a2prog_courses_progCode_fk FOREIGN KEY(progCode)
             REFERENCES a2programs(progCode),
         CONSTRAINT a2prog_courses_courseCode_fk FOREIGN KEY(courseCode)
@@ -651,19 +658,19 @@ INSERT INTO a2jnc_prog_students VALUES (
 
 Prompt Junction Students Courses Insertions
 
-
+-- courseCode, studentID, mark, isActive
 INSERT INTO a2jnc_students_courses VALUES (
-    'OOP345', 1, 1
+    'OOP345', 1, 90, 1
 );
 
 INSERT INTO a2jnc_students_courses VALUES (
-    'SYS366', 1, 1
+    'SYS366', 1, 70, 1
 );
 
 INSERT INTO a2jnc_students_courses VALUES (
-    'DBS301', 1, 1
+    'DBS301', 1, 80, 1
 );
 
 INSERT INTO a2jnc_students_courses VALUES (
-    'CAN190', 1, 1
+    'CAN190', 1, 70, 1
 );
