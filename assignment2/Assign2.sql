@@ -1,3 +1,7 @@
+REVOKE ALL
+    ON user_objects
+    FROM PUBLIC;
+
 -- TODO: find out how to check for existance of a table before 
 -- dropping it
 DROP TABLE a2departments CASCADE CONSTRAINTS;
@@ -14,7 +18,6 @@ DROP TABLE a2advisors CASCADE CONSTRAINTS;
 DROP TABLE a2professors CASCADE CONSTRAINTS;
 DROP TABLE a2sections CASCADE CONSTRAINTS;
 
-
 -- NOTE: Display order is a column to be used as a ordering
 -- precendence column
 
@@ -27,7 +30,7 @@ Prompt Creating Departments Table
 CREATE TABLE a2departments (
 
     deptCode        NUMBER(3, 0)    GENERATED AS IDENTITY(START WITH 1) CONSTRAINT a2departments_deptCode_pk PRIMARY KEY,
-    deptName        VARCHAR2(45)    CONSTRAINT a2departments_deptName_req NOT NULL,
+    deptName        VARCHAR2(55)    CONSTRAINT a2departments_deptName_req NOT NULL,
     officeNumber    NUMBER(4, 0),
     displayOrder    NUMBER(1, 0)
     
@@ -37,7 +40,7 @@ Prompt Creating Terms Table
 
 CREATE TABLE a2term (
 
-    termCode    NUMBER(5, 0)       GENERATED AS IDENTITY CONSTRAINT a2term_termCode_pk PRIMARY KEY,
+    termCode    NUMBER(5, 0)    GENERATED AS IDENTITY CONSTRAINT a2term_termCode_pk PRIMARY KEY,
     termName    VARCHAR2(11)    CONSTRAINT a2term_termName_req NOT NULL,
     startDate   DATE            CONSTRAINT a2term_startDate_req NOT NULL,
     endDate     DATE            CONSTRAINT a2term_endDate_req NOT NULL
@@ -101,7 +104,7 @@ Prompt Creating Courses Table
 CREATE TABLE a2courses (
 
     courseCode  VARCHAR2(8),
-    courseName  VARCHAR2(50)     CONSTRAINT a2courses_courseName_req NOT NULL,
+    courseName  VARCHAR2(50)    CONSTRAINT a2courses_courseName_req NOT NULL,
     isAvailable NUMBER(1, 0)    DEFAULT 1 CONSTRAINT a2courses_isAvailable_req NOT NULL,
     description VARCHAR2(38),
     
@@ -115,7 +118,7 @@ Prompt Creating Programs Table
 CREATE TABLE a2programs (
 
     progCode    CHAR(3),
-    progName    VARCHAR2(30)     CONSTRAINT a2programs_progName_req NOT NULL,
+    progName    VARCHAR2(55)    CONSTRAINT a2programs_progName_req NOT NULL,
     lengthYears NUMBER(1, 0)    CONSTRAINT a2programs_lengthYears_req NOT NULL,
     isCurrent   NUMBER(1, 0)    DEFAULT 1 CONSTRAINT a2programs_isCurrent_req NOT NULL,
     deptCode    NUMBER(4)       CONSTRAINT a2programs_depCode_req NOT NULL,
@@ -132,11 +135,11 @@ Prompt Creating Students Table
 CREATE TABLE a2students (
 
     studentID   NUMBER(5, 0)    GENERATED AS IDENTITY CONSTRAINT a2students_studentID_pk PRIMARY KEY,
-    firstName   VARCHAR2(20)     CONSTRAINT a2students_firstName_req NOT NULL,
-    lastName    VARCHAR2(25)     CONSTRAINT a2students_lastName_req NOT NULL,
+    firstName   VARCHAR2(20)    CONSTRAINT a2students_firstName_req NOT NULL,
+    lastName    VARCHAR2(25)    CONSTRAINT a2students_lastName_req NOT NULL,
     dob         DATE            CONSTRAINT a2students_dob_req NOT NULL,
     gender      CHAR(1),
-    email       VARCHAR2(25)     CONSTRAINT a2students_email_req NOT NULL,
+    email       VARCHAR2(25)    CONSTRAINT a2students_email_req NOT NULL,
     homeCountry CHAR(2),
     phone       VARCHAR2(14),
     advisorID   NUMBER(5, 0),
@@ -176,10 +179,10 @@ Prompt Creating Prog_Courses Table
 
 CREATE TABLE a2jnc_prog_courses (
 
-    progCourseID    NUMBER(5, 0) GENERATED AS IDENTITY CONSTRAINT a2prog_courses_progCourseID_pk PRIMARY KEY,
-    progCode        CHAR(3) CONSTRAINT a2prog_courses_progCode_req NOT NULL,
+    progCourseID    NUMBER(5, 0)    GENERATED AS IDENTITY CONSTRAINT a2prog_courses_progCourseID_pk PRIMARY KEY,
+    progCode        CHAR(3)         CONSTRAINT a2prog_courses_progCode_req NOT NULL,
     courseCode      VARCHAR2(8),
-    isActive        NUMBER(1, 0) DEFAULT 1 CONSTRAINT a2prog_courses_isActive_req NOT NULL,
+    isActive        NUMBER(1, 0)    DEFAULT 1 CONSTRAINT a2prog_courses_isActive_req NOT NULL,
 
         CONSTRAINT a2prog_courses_progCode_fk FOREIGN KEY(progCode)
             REFERENCES a2programs(progCode),
@@ -228,7 +231,7 @@ Prompt Creating Sections Table
 
 CREATE TABLE a2sections (
 
-    sectionID       NUMBER(4, 0),
+    sectionID       NUMBER(4, 0) GENERATED AS IDENTITY,
     sectionLetter   CHAR(1),
     courseCode      VARCHAR2(8),
     termCode        NUMBER(5, 0),
@@ -323,6 +326,7 @@ INSERT INTO a2courses VALUES (
 	'JAC444', 'Introduction to Java for C++ Programmers', 1, NULL
 );
 
+
 Prompt Semester 4 professional option(CPD)
 
 INSERT INTO a2courses VALUES (
@@ -330,7 +334,20 @@ INSERT INTO a2courses VALUES (
 );
 
 
+Prompt General Education Courses
+
+INSERT INTO a2courses VALUES (
+    'CAN190', 'Introduction to Canadian Politics', 1, NULL
+);
+
 Prompt Employees insertions
+
+-- unknown prof, required for couses we have not taken yet
+INSERT INTO a2employees VALUES (
+    0, NULL, 'Unknown', NULL, NULL, 0, 0, 
+        to_date('1970-01-01', 'yyyy-mm-dd'), '?',
+        NULL
+);
 
 INSERT INTO a2employees VALUES (
 	DEFAULT, 'Clint', 'MacDonald', NULL, NULL, 1, 123456789, 
@@ -386,10 +403,17 @@ INSERT INTO a2employees VALUES (
 		'marc.menard@senecacollege.ca', '416.491.5050e26929'
 );
 
+INSERT INTO a2employees VALUES (
+    DEFAULT, 'Betrice', 'Brangman', NULL, NULL, 1, 333333333,
+        to_date('1980-04-10', 'yyyy-mm-dd'),
+        'betrice.brangman@senecacollege.ca',
+        '416.491.5050e26683'
+);
+
 Prompt Departments insertions
 
 INSERT INTO a2departments VALUES (
-	DEFAULT, 'School of info and Comm Tech-SY', NULL, NULL
+	DEFAULT, 'School of Information and Communications Technology', NULL, NULL
 );
 
 INSERT INTO a2departments VALUES (
@@ -402,6 +426,11 @@ INSERT INTO a2departments VALUES (
 
 
 Prompt Professor insertions
+
+-- Unknown prof
+INSERT INTO a2professors VALUES (
+    0, 1, 0
+);
 
 -- Clint
 INSERT INTO a2professors VALUES (
@@ -449,3 +478,192 @@ INSERT INTO a2professors VALUES (
 );
 
 
+Prompt Advisor Insertions
+
+-- Betrice
+INSERT INTO a2advisors VALUES (
+    10, 1
+);
+
+Prompt Program Insertions
+
+INSERT INTO a2programs VALUES (
+    'CPD', 'Computer Programmer', 2, 1, 1
+);
+
+INSERT INTO a2programs VALUES (
+    'CPA', 'Computer Programming and Analysis', 3, 1, 1
+);
+
+INSERT INTO a2programs VALUES (
+    'BSD', 'Honours Bachelor of Technology - Software Development', 4, 1, 1
+);
+
+INSERT INTO a2programs VALUES (
+    'CNS', 'Computer Networking and Technical Support', 2, 1, 1
+);
+
+
+Prompt Term Insertions
+
+INSERT INTO a2term VALUES (
+    DEFAULT, 'Fall 2019', to_date('2019-09-03', 'yyyy-mm-dd'),
+        to_date('2019-12-13', 'yyyy-mm-dd')
+);
+
+INSERT INTO a2term VALUES (
+    DEFAULT, 'Winter 2020', to_date('2020-01-06', 'yyyy-mm-dd'),
+        to_date('2020-04-17', 'yyyy-mm-dd')
+);
+
+Prompt Section Insertions
+
+INSERT INTO a2sections VALUES (
+    DEFAULT, 'B', 'OOP345', 1, 4
+);
+
+INSERT INTO a2sections VALUES (
+    DEFAULT, 'L', 'DBS301', 1, 1
+);
+
+INSERT INTO a2sections VALUES (
+    DEFAULT, 'D', 'SYS366', 1, 6
+);
+
+INSERT INTO a2sections VALUES (
+    DEFAULT, 'A', 'CAN190', 1, 9
+);
+
+
+Prompt Junction Program Courses Insertions
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'IPC144', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'ULI101', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'APC100', 0
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'CPR101', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'COM101', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'DBS201', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'DCF255', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'OOP244', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'WEB222', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'OOP345', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'DBS301', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'SYS366', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'WEB322', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'BCI433', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'EAC397', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'EAC594', 1
+);
+
+INSERT INTO a2jnc_prog_courses VALUES (
+    DEFAULT, 'CPD', 'JAC444', 1
+);
+
+
+Prompt Country Insertions
+
+INSERT INTO a2countries VALUES (
+    'CA', 'Canada', 'NA', 1
+);
+
+INSERT INTO a2countries VALUES ( 
+    'US', 'United States of America', 'NA', 1 
+);
+
+
+Prompt Student Insertions
+
+INSERT INTO a2students VALUES (
+    DEFAULT, 'Nicholas', 'Defranco', to_date('2000-06-16', 'yyyy-mm-dd'),
+        'M', 'ndefranco@myseneca.ca', 'CA', NULL, 10
+);
+
+Prompt Junction Program Students Insertions
+
+INSERT INTO a2jnc_prog_students VALUES (
+    'CPD', 1, 1
+);
+
+
+Prompt Junction Student Courses
+
+INSERT INTO a2jnc_prog_students VALUES (
+    'OOP345', 1, 1
+);
+
+INSERT INTO a2jnc_prog_students VALUES (
+    'SYS366', 1, 1
+);
+
+INSERT INTO a2jnc_prog_students VALUES (
+    'DBS301', 1, 1
+);
+
+INSERT INTO a2jnc_prog_students VALUES (
+    'CAN190', 1, 1
+);
+
+Prompt Junction Students Courses Insertions
+
+
+INSERT INTO a2jnc_students_courses VALUES (
+    'OOP345', 1, 1
+);
+
+INSERT INTO a2jnc_students_courses VALUES (
+    'SYS366', 1, 1
+);
+
+INSERT INTO a2jnc_students_courses VALUES (
+    'DBS301', 1, 1
+);
+
+INSERT INTO a2jnc_students_courses VALUES (
+    'CAN190', 1, 1
+);
