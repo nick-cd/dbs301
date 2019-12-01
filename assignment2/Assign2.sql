@@ -1,29 +1,47 @@
 -- GROUP 12
 -- Date: Nov 23, 2019
 -- Pupose: assignment 2
-
-REVOKE ALL
-    ON user_objects
-    FROM PUBLIC;
     
--- TODO: find out how to check for existance of a table before 
--- dropping it
-DROP TABLE a2departments CASCADE CONSTRAINTS;
-DROP TABLE a2term CASCADE CONSTRAINTS;
-DROP TABLE a2employees CASCADE CONSTRAINTS;
-DROP TABLE a2countries CASCADE CONSTRAINTS;
-DROP TABLE a2courses CASCADE CONSTRAINTS;
-DROP TABLE a2programs CASCADE CONSTRAINTS;
-DROP TABLE a2students CASCADE CONSTRAINTS;
-DROP TABLE a2jnc_students_sections CASCADE CONSTRAINTS;
-DROP TABLE a2jnc_prog_courses CASCADE CONSTRAINTS;
-DROP TABLE a2jnc_prog_students CASCADE CONSTRAINTS;
-DROP TABLE a2advisors CASCADE CONSTRAINTS;
-DROP TABLE a2professors CASCADE CONSTRAINTS;
-DROP TABLE a2sections CASCADE CONSTRAINTS;
+-- Drops a table only if it exists
+CREATE OR REPLACE PROCEDURE DROP_TABLE_IF_EXISTS(name IN VARCHAR2) AS 
 
--- NOTE: Display order is a column to be used as a ordering
--- precendence column
+amt INTEGER;
+
+BEGIN
+    SELECT count(*) INTO amt
+        FROM (
+            SELECT object_name
+                FROM ALL_OBJECTS
+                WHERE lower(object_name) = lower(name)
+                    AND lower(object_type) = 'table'
+        );
+        
+    IF (amt > 0) THEN
+        EXECUTE IMMEDIATE 'DROP TABLE ' || name;
+    END IF;
+    
+END;
+/
+
+
+Prompt ****** Dropping tables ....
+
+BEGIN
+    DROP_TABLE_IF_EXISTS('a2jnc_students_sections');
+    DROP_TABLE_IF_EXISTS('a2jnc_prog_students');
+    DROP_TABLE_IF_EXISTS('a2jnc_prog_courses');
+    DROP_TABLE_IF_EXISTS('a2sections');
+    DROP_TABLE_IF_EXISTS('a2courses');
+    DROP_TABLE_IF_EXISTS('a2term');
+    DROP_TABLE_IF_EXISTS('a2programs');
+    DROP_TABLE_IF_EXISTS('a2professors');
+    DROP_TABLE_IF_EXISTS('a2departments');
+    DROP_TABLE_IF_EXISTS('a2students');
+    DROP_TABLE_IF_EXISTS('a2countries');
+    DROP_TABLE_IF_EXISTS('a2advisors');
+    DROP_TABLE_IF_EXISTS('a2employees');
+END;
+/
 
 Prompt **************************************************
 Prompt Table creations
@@ -31,10 +49,11 @@ Prompt **************************************************
 
 Prompt ******  Creating a2departments table ....
 
-
+-- NOTE: Display order is a column to be used as a ordering
+-- precendence column
 CREATE TABLE a2departments (
 
-    deptCode        INTEGER         GENERATED AS IDENTITY(START WITH 1),
+    deptCode        INTEGER         GENERATED AS IDENTITY,
     deptName        VARCHAR2(55)    NOT NULL,
     officeNumber    INTEGER         NOT NULL,
     displayOrder    INTEGER,
@@ -82,7 +101,7 @@ Prompt ******  Creating a2advisors  table ....
 CREATE TABLE a2advisors (
 
     empID       INTEGER,
-    isActive    INTEGER DEFAULT 1 NOT NULL,
+    isActive    INTEGER     DEFAULT 1 NOT NULL,
 
         CONSTRAINT a2advisors_empID_pk PRIMARY KEY(empID),
         CONSTRAINT a2advisors_isActive_chk CHECK(isActive IN(1, 0)),  
@@ -284,6 +303,9 @@ INSERT INTO a2courses VALUES (
 	'ULI101', 'Introduction to UNIX/Linux and the Internet', 1, NULL
 );
 
+INSERT INTO a2courses VALUES (
+    'EAC149', 'English and Communications', 1, NULL
+);
 
 Prompt Semester 2 courses(CPD and CPA)
 
@@ -470,6 +492,61 @@ INSERT INTO a2employees VALUES (
         'mary.saith@senecacollege.ca', '416.491.5050e24025'
 );
 
+INSERT INTO a2employees VALUES (
+    333999777, 'Robert', 'Robson', NULL, NULL, 1, 777777777,
+        to_date('1970-08-12', 'yyyy-mm-dd'),
+        'robert.robson1@senecacollege.ca', '416.491.5050e24138'
+);
+
+INSERT INTO a2employees VALUES (
+    222000999, 'John', 'Selmys', NULL, NULL, 1, 888888888,
+        to_date('1970-01-01', 'yyyy-mm-dd'),
+        'john.selmys@senecacollege.ca', '416.491.5050'
+);
+
+INSERT INTO a2employees VALUES (
+    333555111, 'Tim', 'Mckenna', NULL, NULL, 1, 999999999,
+        to_date('1965-10-09', 'yyyy-mm-dd'),
+        'timothy.mckenna@senecacollege.ca', '416.491.5050e26724'
+);
+
+INSERT INTO a2employees VALUES (
+    222777888, 'Michelle', 'Duhaney', NULL, NULL, 1, 000111222,
+        to_date('1980-10-12', 'yyyy-mm-dd'),
+        'michelle.duhaney@senecacollege.ca', '416.491.5050e55529'
+);
+
+INSERT INTO a2employees VALUES (
+    333222666, 'Erik', 'Schomann', NULL, NULL, 1, 777666222,
+        to_date('1980-10-12', 'yyyy-mm-dd'),
+        'erik.schomann@senecacollege.ca', '416.491.5050e33131'
+);
+
+INSERT INTO a2employees VALUES (
+    555111888, 'Nick', 'Romanidis', NULL, NULL, 1, 999555333,
+        to_date('1985-04-12', 'yyyy-mm-dd'),
+        'nick.romanidis@senecacollege.ca', '444.555.1111'
+);
+
+INSERT INTO a2employees VALUES (
+    888111222, 'Shannon', 'Blake', NULL, NULL, 1, 555000222,
+        to_date('1985-04-12', 'yyyy-mm-dd'),
+        'shannon.blake@senecacollege.ca', '416.491.5050e33134'
+);
+
+INSERT INTO a2employees VALUES (
+    777666444, 'Najma', 'Ismat', NULL, NULL, 1, 333999111,
+        to_date('1950-03-18', 'yyyy-mm-dd'),
+        'najma.ismat@senecacollege.ca', '416.491.5050e26452'
+);
+
+INSERT INTO a2employees VALUES (
+    666111000, 'Beau', 'Sackey', NULL, NULL, 1, 111777333,
+        to_date('1985-04-12', 'yyyy-mm-dd'),
+        'beau.sackey@senecacollege.ca', '111.999.2222'
+);
+
+
 Prompt Departments insertions
 
 -- deptCode, deptName, officeNumber, displayOrder
@@ -558,6 +635,50 @@ INSERT INTO a2professors VALUES (
     789789789, 4, 1
 );
 
+-- Robert Robson
+INSERT INTO a2professors VALUES (
+    333999777, 1, 1
+);
+
+-- John Selmys
+INSERT INTO a2professors VALUES (
+    222000999, 1, 1
+);
+
+-- Tim Mckenna
+INSERT INTO a2professors VALUES (
+    333555111, 1, 1
+);
+
+-- Michelle Duhaney
+INSERT INTO a2professors VALUES (
+    222777888, 3, 1
+);
+
+-- Erik Schomann
+INSERT INTO a2professors VALUES (
+    333222666, 3, 1
+);
+
+-- Nick Romanidis
+INSERT INTO a2professors VALUES (
+    555111888, 1, 1
+);
+
+-- Shannon Blake
+INSERT INTO a2professors VALUES (
+    888111222, 3, 1
+);
+
+-- Najma Ismat
+INSERT INTO a2professors VALUES (
+    777666444, 1, 1
+);
+
+-- Beau Sackey
+INSERT INTO a2professors VALUES (
+    666111000, 1, 1
+);
 
 Prompt Advisor Insertions
 -- empID, isActive
@@ -606,11 +727,26 @@ INSERT INTO a2term VALUES (
         to_date('2020-08-14', 'yyyy-mm-dd')
 );
 
+INSERT INTO a2term VALUES (
+    DEFAULT, 'Winter 2019', to_date('2019-01-06', 'yyyy-mm-dd'),
+        to_date('2020-04-17', 'yyyy-mm-dd')
+);
+
+INSERT INTO a2term VALUES (
+    DEFAULT, 'Summer 2019', to_date('2019-05-04', 'yyyy-mm-dd'),
+        to_date('2019-08-14', 'yyyy-mm-dd')
+);
+
+INSERT INTO a2term VALUES (
+    DEFAULT, 'Fall 2018', to_date('2018-09-03', 'yyyy-mm-dd'),
+        to_date('2018-12-13', 'yyyy-mm-dd')
+);
 
 Prompt Section Insertions
 -- sectionID, sectionLetter, courseCode, termCode, profID
 
 
+Prompt Current Term's Sections
 INSERT INTO a2sections VALUES (
     DEFAULT, 'B', 'OOP345', 1, 222333444
 );
@@ -673,6 +809,49 @@ INSERT INTO a2sections VALUES (
 
 INSERT INTO a2sections VALUES (
     DEFAULT, 'C', 'WTP100', 1, 789789789
+);
+
+
+Prompt Previous Terms' Sections
+
+Prompt Fall 2018
+
+INSERT INTO a2sections VALUES (
+    DEFAULT, 'P', 'IPC144', 6, 333999777
+); 
+
+INSERT INTO a2sections VALUES (
+    DEFAULT, 'P', 'ULI101', 6, 222000999
+);
+
+INSERT INTO a2sections VALUES (
+    DEFAULT, 'P', 'CPR101', 6, 333555111
+);
+
+INSERT INTO a2sections VALUES (
+    DEFAULT, 'P', 'APC100', 6, 333222666
+);
+
+INSERT INTO a2sections VALUES (
+    DEFAULT, 'A', 'EAC149', 6, 222777888
+);
+
+Prompt Winter 2019
+
+INSERT INTO a2sections VALUES (
+    DEFAULT, 'A', 'OOP244', 4, 555111888
+);
+
+INSERT INTO a2sections VALUES (
+    DEFAULT, 'A', 'WEB222', 4, 555666777
+);
+
+INSERT INTO a2sections VALUES (
+    DEFAULT, 'A', 'DCF255', 4, 777666444
+);
+
+INSERT INTO a2sections VALUES (
+    DEFAULT, 'A', 'COM101', 4, 888111222
 );
 
 Prompt Junction Program Courses Insertions
@@ -947,12 +1126,21 @@ INSERT INTO a2students VALUES (
         'M', 'vqdnguyen@myseneca.ca', 'CA', '444.555.6666', 888999000
 );
 
+INSERT INTO a2students VALUES (
+    333333333, 'Some', 'Guy', to_date('1950-05-09', 'yyyy-mm-dd'),
+        'M', 'email@myseneca.ca', 'CA', '999.888.7777', 888999000
+);
+
 Prompt Junction Program Students Insertions
 
 -- progCode, studentID, isActive
--- Nicholas is in CPD
+-- Nicholas and some guy are in CPD
 INSERT INTO a2jnc_prog_students VALUES (
     'CPD', 106732183, 1
+);
+
+INSERT INTO a2jnc_prog_students VALUES (
+    'CPD', 333333333, 1
 );
 
 -- Alex and henry are in CPA
@@ -1033,14 +1221,45 @@ INSERT INTO a2jnc_students_sections VALUES (
     16, 222222222, 100, 1
 );
 
+-- TODO: add/revoke permissions...
 
--- TODO: add permissions...
-GRANT SELECT, UPDATE, DELETE, INSERT
-    ON a2departments
-    TO dbs301_193a17;
+CREATE OR REPLACE PROCEDURE CREATE_GOD(name IN VARCHAR2) AS 
 
-GRANT SELECT, UPDATE, DELETE, INSERT
-    ON a2departments
-    TO dbs301_193a45;
+    tablename all_objects.object_name%type;
+
+    CURSOR tablegroup IS
+        SELECT object_name
+            FROM all_objects
+            WHERE lower(object_type) = 'table'
+                AND lower(object_name) LIKE 'a2%';
+
+BEGIN
+
+    OPEN tablegroup;
     
+    LOOP
+        
+        FETCH tablegroup INTO tablename;
+        EXIT WHEN tablegroup%NOTFOUND;
+        EXECUTE IMMEDIATE 'GRANT SELECT, UPDATE, DELETE, '
+            || 'INSERT ON ' || tablename || ' TO ' || name;
+        
+    END LOOP;
+    
+    CLOSE tablegroup;
 
+END;
+/
+
+REVOKE ALL
+    ON user_objects
+    FROM PUBLIC;
+
+BEGIN
+    
+    CREATE_GOD('dbs301_193a17');
+    CREATE_GOD('dbs301_193a45');
+
+END;
+/
+    
