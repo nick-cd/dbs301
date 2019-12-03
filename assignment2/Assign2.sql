@@ -53,9 +53,9 @@ Prompt ******  Creating a2departments table ....
 -- precendence column
 CREATE TABLE a2departments (
 
-    deptCode        INTEGER         GENERATED AS IDENTITY,
+    deptCode        VARCHAR2(16),
     deptName        VARCHAR2(55)    NOT NULL,
-    officeNumber    INTEGER         NOT NULL,
+    officeNumber    VARCHAR2(8)         NOT NULL,
     displayOrder    INTEGER,
     
         CONSTRAINT a2departments_deptCode_pk PRIMARY KEY(deptCode)
@@ -66,7 +66,7 @@ Prompt ******  Creating a2term table ....
 
 CREATE TABLE a2term (
 
-    termCode    INTEGER         GENERATED AS IDENTITY,
+    termCode    INTEGER,
     termName    VARCHAR2(11)    NOT NULL,
     startDate   DATE            NOT NULL,
     endDate     DATE            NOT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE a2countries (
     countryCode     CHAR(2),
     countryName     VARCHAR2(56),
     continent       CHAR(2),
-    isActive        NUMBER(1, 0)    DEFAULT 1,
+    isActive        INTEGER    DEFAULT 1,
         
         CONSTRAINT a2countries_countryCode_pk PRIMARY KEY(countryCode),
         CONSTRAINT a2countries_countryName_unq UNIQUE(countryName),
@@ -148,7 +148,7 @@ CREATE TABLE a2programs (
     progName    VARCHAR2(55)    NOT NULL,
     lengthYears INTEGER,
     isCurrent   INTEGER         DEFAULT 1 NOT NULL,
-    deptCode    INTEGER         NOT NULL,
+    deptCode    VARCHAR(16)     NOT NULL,
     
         CONSTRAINT a2programs_progCode_pk PRIMARY KEY(progCode),
         CONSTRAINT a2programs_deptCode_fk FOREIGN KEY(deptCode)
@@ -186,7 +186,7 @@ Prompt ******  Creating a2professors  table ....
 CREATE TABLE a2professors (
 
     empID       INTEGER,
-    deptCode    INTEGER,
+    deptCode    VARCHAR2(16),
     isActive    INTEGER DEFAULT 1,
     
         CONSTRAINT a2professors_empID_pk PRIMARY KEY(empID),
@@ -203,7 +203,7 @@ Prompt ******  Creating a2sections  table ....
 
 CREATE TABLE a2sections (
 
-    sectionID       INTEGER GENERATED AS IDENTITY,
+    sectionID       CHAR(11),
     sectionLetter   CHAR(1),
     courseCode      VARCHAR2(8),
     termCode        INTEGER,
@@ -550,8 +550,9 @@ INSERT INTO a2employees VALUES (
 Prompt Departments insertions
 
 -- deptCode, deptName, officeNumber, displayOrder
+/*
 INSERT INTO a2departments VALUES (
-	DEFAULT, 'School of Information and Communications Technology', 1, NULL
+	'ASET-SICT', 'School of Information and Communications Technology', 1, NULL
 );
 
 INSERT INTO a2departments VALUES (
@@ -565,7 +566,14 @@ INSERT INTO a2departments VALUES (
 INSERT INTO a2departments VALUES (
     DEFAULT, 'Work Integrated Learning', 4, NULL
 );
-
+*/
+INSERT INTO a2departments VALUES ('ASET-SICT','School of Information and Communications Technology','K1234',1);
+INSERT INTO a2departments VALUES ('ASET-SA','School of Aviation','K1236',1);
+INSERT INTO a2departments VALUES ('ASET-SBSAC','School of Biological Sciences and Applied Chemistry','K1238',1);
+INSERT INTO a2departments VALUES ('ASET-SEMET','School of Electronics and Mechanical Engineering Technology','K1240',1);
+INSERT INTO a2departments VALUES ('ASET-SECET','School of Environmental and Civil Engineering Technology','K1242',1);
+INSERT INTO a2departments VALUES ('ASET-SFPET','School of Fire Protection Engineering Technology','K1244',1);
+INSERT INTO a2departments VALUES ('SB-SELS', 'School of English and Liberal Studies', 'A1010', 1);
 
 Prompt Professor insertions
 -- empID, deptCode, isActive
@@ -577,107 +585,107 @@ INSERT INTO a2professors VALUES (
 
 -- Clint
 INSERT INTO a2professors VALUES (
-	123456789, 1, 1
+	123456789, 'ASET-SICT', 1
 );
 
 -- Ron
 INSERT INTO a2professors VALUES (
-	987654321, 1, 1
+	987654321, 'ASET-SICT', 1
 );
 
 -- Robert
 INSERT INTO a2professors VALUES (
-	111222333, 1, 1
+	111222333, 'ASET-SICT', 1
 );
 
 -- Nathan
 INSERT INTO a2professors VALUES (
-	222333444, 1, 1
+	222333444, 'ASET-SICT', 1
 );
 
 -- Asam
 INSERT INTO a2professors VALUES (
-	333444555, 1, 1
+	333444555, 'ASET-SICT', 1
 );
 
 -- Stanley
 INSERT INTO a2professors VALUES (
-	444555666, 1, 1
+	444555666, 'ASET-SICT', 1
 );
 
 -- Kadeem
 INSERT INTO a2professors VALUES (
-	555666777, 2, 1
+	555666777, 'ASET-SICT', 1
 );
 
 -- James
 INSERT INTO a2professors VALUES (
-	666777888, 1, 1
+	666777888, 'ASET-SICT', 1
 );
 
 -- Marc
 INSERT INTO a2professors VALUES (
-	777888999, 3, 1
+	777888999, 'SB-SELS', 1
 );
 
 -- Nebojsa
 INSERT INTO a2professors VALUES (
-    123123123, 1, 1
+    123123123, 'ASET-SICT', 1
 );
 
 -- Nour
 INSERT INTO a2professors VALUES (
-    321321321, 1, 1
+    321321321, 'ASET-SICT', 1
 );
 
 -- Mary
 INSERT INTO a2professors VALUES (
-    789789789, 4, 1
+    789789789, 'ASET-SICT', 1
 );
 
 -- Robert Robson
 INSERT INTO a2professors VALUES (
-    333999777, 1, 1
+    333999777, 'ASET-SICT', 1
 );
 
 -- John Selmys
 INSERT INTO a2professors VALUES (
-    222000999, 1, 1
+    222000999, 'ASET-SICT', 1
 );
 
 -- Tim Mckenna
 INSERT INTO a2professors VALUES (
-    333555111, 1, 1
+    333555111, 'ASET-SICT', 1
 );
 
 -- Michelle Duhaney
 INSERT INTO a2professors VALUES (
-    222777888, 3, 1
+    222777888, 'SB-SELS', 1
 );
 
 -- Erik Schomann
 INSERT INTO a2professors VALUES (
-    333222666, 3, 1
+    333222666, 'SB-SELS', 1
 );
 
 -- Nick Romanidis
 INSERT INTO a2professors VALUES (
-    555111888, 1, 1
+    555111888, 'ASET-SICT', 1
 );
 
 -- Shannon Blake
 INSERT INTO a2professors VALUES (
-    888111222, 3, 1
+    888111222, 'SB-SELS', 1
 );
 
 -- Najma Ismat
 INSERT INTO a2professors VALUES (
-    777666444, 1, 1
+    777666444, 'ASET-SICT', 1
 );
 
 -- Beau Sackey
 INSERT INTO a2professors VALUES (
-    666111000, 1, 1
+    666111000, 'ASET-SICT', 1
 );
 
 Prompt Advisor Insertions
@@ -692,19 +700,19 @@ Prompt Program Insertions
 -- progCode, progName, lengthYears, isCurrent, deptCode
 
 INSERT INTO a2programs VALUES (
-    'CPD', 'Computer Programmer', 2, 1, 1
+    'CPD', 'Computer Programmer', 2, 1, 'ASET-SICT'
 );
 
 INSERT INTO a2programs VALUES (
-    'CPA', 'Computer Programming and Analysis', 3, 1, 1
+    'CPA', 'Computer Programming and Analysis', 3, 1, 'ASET-SICT'
 );
 
 INSERT INTO a2programs VALUES (
-    'BSD', 'Honours Bachelor of Technology - Software Development', 4, 1, 1
+    'BSD', 'Honours Bachelor of Technology - Software Development', 4, 1, 'ASET-SICT'
 );
 
 INSERT INTO a2programs VALUES (
-    'CNS', 'Computer Networking and Technical Support', 2, 1, 1
+    'CNS', 'Computer Networking and Technical Support', 2, 1, 'ASET-SICT'
 );
 
 
@@ -712,33 +720,33 @@ Prompt Term Insertions
 -- termCode, termName, startDate, endDate
 
 INSERT INTO a2term VALUES (
-    DEFAULT, 'Fall 2019', to_date('2019-09-03', 'yyyy-mm-dd'),
+    1909, 'Fall 2019', to_date('2019-09-03', 'yyyy-mm-dd'),
         to_date('2019-12-13', 'yyyy-mm-dd')
 );
 
 INSERT INTO a2term VALUES (
-    DEFAULT, 'Winter 2020', to_date('2020-01-06', 'yyyy-mm-dd'),
+    2001, 'Winter 2020', to_date('2020-01-06', 'yyyy-mm-dd'),
         to_date('2020-04-17', 'yyyy-mm-dd')
 );
 
 -- may the 4th be with you
 INSERT INTO a2term VALUES (
-    DEFAULT, 'Summer 2020', to_date('2020-05-04', 'yyyy-mm-dd'),
+    2005, 'Summer 2020', to_date('2020-05-04', 'yyyy-mm-dd'),
         to_date('2020-08-14', 'yyyy-mm-dd')
 );
 
 INSERT INTO a2term VALUES (
-    DEFAULT, 'Winter 2019', to_date('2019-01-06', 'yyyy-mm-dd'),
+    1901, 'Winter 2019', to_date('2019-01-06', 'yyyy-mm-dd'),
         to_date('2020-04-17', 'yyyy-mm-dd')
 );
 
 INSERT INTO a2term VALUES (
-    DEFAULT, 'Summer 2019', to_date('2019-05-04', 'yyyy-mm-dd'),
+    1905, 'Summer 2019', to_date('2019-05-04', 'yyyy-mm-dd'),
         to_date('2019-08-14', 'yyyy-mm-dd')
 );
 
 INSERT INTO a2term VALUES (
-    DEFAULT, 'Fall 2018', to_date('2018-09-03', 'yyyy-mm-dd'),
+    1809, 'Fall 2018', to_date('2018-09-03', 'yyyy-mm-dd'),
         to_date('2018-12-13', 'yyyy-mm-dd')
 );
 
@@ -748,67 +756,67 @@ Prompt Section Insertions
 
 Prompt Current Term's Sections
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'B', 'OOP345', 1, 222333444
+    DEFAULT, 'B', 'OOP345', 1909, 222333444
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'A', 'OOP345', 1, 222333444
+    DEFAULT, 'A', 'OOP345', 1909, 222333444
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'G', 'OOP345', 1, 333444555
+    DEFAULT, 'G', 'OOP345', 1909, 333444555
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'F', 'OOP345', 1, 333444555
+    DEFAULT, 'F', 'OOP345', 1909, 333444555
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'A', 'DBS301', 1, 123456789
+    DEFAULT, 'A', 'DBS301', 1909, 123456789
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'B', 'DBS301', 1, 123456789
+    DEFAULT, 'B', 'DBS301', 1909, 123456789
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'G', 'DBS301', 1, 987654321
+    DEFAULT, 'G', 'DBS301', 1909, 987654321
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'C', 'DBS301', 1, 111222333
+    DEFAULT, 'C', 'DBS301', 1909, 111222333
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'D', 'DBS301', 1, 111222333
+    DEFAULT, 'D', 'DBS301', 1909, 111222333
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'D', 'SYS366', 1, 444555666
+    DEFAULT, 'D', 'SYS366', 1909, 444555666
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'E', 'SYS366', 1, 444555666
+    DEFAULT, 'E', 'SYS366', 1909, 444555666
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'D', 'WEB322', 1, 321321321
+    DEFAULT, 'D', 'WEB322', 1909, 321321321
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'F', 'WEB322', 1, 555666777
+    DEFAULT, 'F', 'WEB322', 1909, 555666777
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'E', 'WEB322', 1, 666777888
+    DEFAULT, 'E', 'WEB322', 1909, 666777888
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'A', 'CAN190', 1, 777888999
+    DEFAULT, 'A', 'CAN190', 1909, 777888999
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'C', 'WTP100', 1, 789789789
+    DEFAULT, 'C', 'WTP100', 1909, 789789789
 );
 
 
@@ -817,41 +825,41 @@ Prompt Previous Terms' Sections
 Prompt Fall 2018
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'P', 'IPC144', 6, 333999777
+    DEFAULT, 'P', 'IPC144', 1809, 333999777
 ); 
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'P', 'ULI101', 6, 222000999
+    DEFAULT, 'P', 'ULI101', 1809, 222000999
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'P', 'CPR101', 6, 333555111
+    DEFAULT, 'P', 'CPR101', 1809, 333555111
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'P', 'APC100', 6, 333222666
+    DEFAULT, 'P', 'APC100', 1809, 333222666
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'A', 'EAC149', 6, 222777888
+    DEFAULT, 'A', 'EAC149', 1809, 222777888
 );
 
 Prompt Winter 2019
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'A', 'OOP244', 4, 555111888
+    DEFAULT, 'K', 'OOP244', 1901, 555111888
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'A', 'WEB222', 4, 555666777
+    DEFAULT, 'A', 'WEB222', 1901, 555666777
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'A', 'DCF255', 4, 777666444
+    DEFAULT, 'B', 'DCF255', 1901, 777666444
 );
 
 INSERT INTO a2sections VALUES (
-    DEFAULT, 'A', 'COM101', 4, 888111222
+    DEFAULT, 'A', 'COM101', 1901, 888111222
 );
 
 Prompt Junction Program Courses Insertions
@@ -1049,7 +1057,6 @@ INSERT INTO a2countries VALUES (
     'ZI', 'Zimbabwe', 'AF', 1
 );
 
-
 INSERT INTO a2countries VALUES ( 
     'FR', 'France', 'AN', 1
 );
@@ -1118,16 +1125,16 @@ INSERT INTO a2students VALUES (
 
 -- TODO: requires modifications!
 INSERT INTO a2students VALUES (
-    111111111, 'Alex', 'Hai', to_date('1996-11-18', 'yyyy-mm-dd'),
+    140230186, 'Alex', 'Hai', to_date('1990-10-18', 'yyyy-mm-dd'),
         'M', 'amchai@myseneca.ca', 'CA', '222.333.4444', 888999000
 );
 INSERT INTO a2students VALUES (
-    222222222, 'Henry', 'Nguyen', to_date('1996-11-18', 'yyyy-mm-dd'),
+    139335178, 'Henry', 'Nguyen', to_date('1997-02-10', 'yyyy-mm-dd'),
         'M', 'vqdnguyen@myseneca.ca', 'CA', '444.555.6666', 888999000
 );
 
 INSERT INTO a2students VALUES (
-    333333333, 'Some', 'Guy', to_date('1950-05-09', 'yyyy-mm-dd'),
+    333333333, 'Some', 'Guy', to_date('1969-04-20', 'yyyy-mm-dd'),
         'M', 'email@myseneca.ca', 'CA', '999.888.7777', 888999000
 );
 
@@ -1145,17 +1152,26 @@ INSERT INTO a2jnc_prog_students VALUES (
 
 -- Alex and henry are in CPA
 INSERT INTO a2jnc_prog_students VALUES (
-    'CPA', 111111111, 1
+    'CPA', 139335178, 1
 );
 
 INSERT INTO a2jnc_prog_students VALUES (
-    'CPA', 222222222, 1
+    'CPA', 140230186, 1
 );
 
 
 Prompt Junction Students Sections Insertions
 
 -- sectionID, studentID, mark, isActive
+
+INSERT INTO a2jnc_students_sections VALUES (
+    2, 333333333, 80, 1
+);
+SELECT * FROM a2sections;
+
+
+
+Prompt Inserting Nicholas's Current Courses
 -- Nicholas's courses
 -- OOP - B
 INSERT INTO a2jnc_students_sections VALUES (
@@ -1167,58 +1183,97 @@ INSERT INTO a2jnc_students_sections VALUES (
     10, 106732183, 70, 1
 );
 
+-- DBS301 - B
 INSERT INTO a2jnc_students_sections VALUES (
     6, 106732183, 80, 1
 );
 
+-- CAN190 - A
 INSERT INTO a2jnc_students_sections VALUES (
     15, 106732183, 70, 1
+);
+
+Prompt Inserting Nicholas Past Courses
+INSERT INTO a2jnc_students_sections VALUES (
+    17, 106732183, 90, 0
+);
+
+INSERT INTO a2jnc_students_sections VALUES (
+    18, 106732183, 90, 0
+);
+
+INSERT INTO a2jnc_students_sections VALUES (
+    19, 106732183, 90, 0
+);
+
+INSERT INTO a2jnc_students_sections VALUES (
+    20, 106732183, 75, 0
+);
+
+INSERT INTO a2jnc_students_sections VALUES (
+    21, 106732183, 80, 0
+);
+
+INSERT INTO a2jnc_students_sections VALUES (
+    22, 106732183, 90, 0
+);
+
+INSERT INTO a2jnc_students_sections VALUES (
+    23, 106732183, 80, 0
+);
+
+INSERT INTO a2jnc_students_sections VALUES (
+    24, 106732183, 70, 0
+);
+
+INSERT INTO a2jnc_students_sections VALUES (
+    25, 106732183, 70, 0
 );
 
 -- Alex is too smart
 -- OOP345
 INSERT INTO a2jnc_students_sections VALUES (
-    1, 111111111, 100, 1
+    1, 140230186, 100, 1
 );
 -- SYS366
 INSERT INTO a2jnc_students_sections VALUES (
-    10, 111111111, 100, 1
+    10, 140230186, 100, 1
 );
 -- DBS301
 INSERT INTO a2jnc_students_sections VALUES (
-    6, 111111111, 100, 1
+    6, 140230186, 100, 1
 );
 
 -- TODO: fix section id
 -- WEB322
 INSERT INTO a2jnc_students_sections VALUES (
-    12, 111111111, 100, 1
+    12, 140230186, 100, 1
 );
 -- WTP100
 INSERT INTO a2jnc_students_sections VALUES (
-    16, 111111111, 100, 1
+    16, 140230186, 100, 1
 );
 
 -- Henry is also too smart
 -- WTP100
 INSERT INTO a2jnc_students_sections VALUES (
-    1, 222222222, 100, 1
+    1, 139335178, 100, 1
 );
 -- SYS366
 INSERT INTO a2jnc_students_sections VALUES (
-    10, 222222222, 100, 1
+    10, 139335178, 100, 1
 );
 -- DBS301
 INSERT INTO a2jnc_students_sections VALUES (
-    6, 222222222, 100, 1
+    6, 139335178, 100, 1
 );
 -- WEB322
 INSERT INTO a2jnc_students_sections VALUES (
-    12, 222222222, 100, 1
+    12, 139335178, 100, 1
 );
 -- WTP100
 INSERT INTO a2jnc_students_sections VALUES (
-    16, 222222222, 100, 1
+    16, 139335178, 100, 1
 );
 
 -- TODO: add/revoke permissions...
@@ -1251,9 +1306,16 @@ BEGIN
 END;
 /
 
+Prompt Revoking all Permissions from Public
+
 REVOKE ALL
     ON user_objects
     FROM PUBLIC;
+
+
+
+
+Prompt Granting DML permissions to Group Members
 
 BEGIN
     
@@ -1262,4 +1324,63 @@ BEGIN
 
 END;
 /
+
+SELECT * 
+    FROM (
+        SELECT firstName || ' ' || lastName AS "Name", courseCode, mark
+            FROM a2students JOIN a2jnc_students_sections USING(studentID)
+                JOIN a2sections USING(sectionID)
+    )
+    PIVOT (
+        sum(mark)
+        FOR courseCode
+        IN (
+            'OOP345', 'WEB222', 'DBS301'
+        )
+    )
+    ORDER BY "Name";
+
+   
+SELECT firstName || ' ' || lastName AS "Name", courseCode, mark
+    FROM a2students JOIN a2jnc_students_sections USING(studentID)
+        JOIN a2sections USING(sectionID)
+   
+   
+
+/*  
+
+SELECT courseCode, mark
+    FROM a2students JOIN a2jnc_students_sections USING(studentID)
+        JOIN a2sections USING(sectionID)
+    WHERE studentID = 106732183;
     
+    
+
+SELECT firstName || ' ' || lastName AS "Name", courseCode, round(avg(mark), 2)
+    FROM a2students JOIN a2jnc_students_sections USING(studentID)
+        JOIN a2sections USING(sectionID)
+    GROUP BY rollup(courseCode, firstName || ' ' || lastName);
+
+SELECT e.firstName, s.firstName, round(avg(mark), 2)
+    FROM a2students s JOIN a2jnc_students_sections ss ON s.studentID = ss.studentID
+        JOIN a2sections sec ON ss.sectionID = sec.sectionID
+        JOIN a2professors p ON sec.profID = p.empID
+        JOIN a2employees e ON e.empID = p.empID
+    WHERE sec.sectionID = 16
+    GROUP BY e.firstName, s.firstName;
+    
+SELECT * FROM a2sections;
+
+SELECT firstName || ' ' || lastName AS "Name", courseCode, sectionLetter, round(avg(mark), 2) AS "AVG"
+    FROM a2employees e JOIN a2professors p ON p.empID = e.empID
+        JOIN a2sections s ON p.empID = s.profID
+        JOIN a2jnc_students_sections j ON j.sectionID = s.sectionID
+    WHERE s.termCode = 1
+    GROUP BY courseCode, sectionLetter, firstName || ' ' || lastName
+    ORDER BY "Name";
+    
+SELECT (SELECT progName FROM a2programs WHERE progCode = j.progCode) AS "ProgName", 
+        CourseCode
+    FROM a2jnc_prog_courses j;
+
+*/
