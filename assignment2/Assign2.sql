@@ -61,6 +61,9 @@ CREATE TABLE a2departments (
     
 );
 
+COMMENT ON COLUMN a2departments.deptCode
+IS 'Primary Key, takes the form "faculty-department". Both of which are abbreviated';
+
 Prompt ******  Creating a2term table ....
 
 CREATE TABLE a2term (
@@ -72,6 +75,9 @@ CREATE TABLE a2term (
     
         CONSTRAINT a2term_termCode_pk PRIMARY KEY(termCode)
 );
+
+COMMENT ON COLUMN a2term.termCode
+IS 'Primary Key, takes the form yymm, which represents the starting month of the term';
 
 Prompt ******  Creating a2employees  table ....
 
@@ -100,7 +106,7 @@ Prompt ******  Creating a2advisors  table ....
 CREATE TABLE a2advisors (
 
     empID       INTEGER,
-    isActive    INTEGER     DEFAULT 1 NOT NULL,
+    isActive    INTEGER     DEFAULT 0 NOT NULL,
 
         CONSTRAINT a2advisors_empID_pk PRIMARY KEY(empID),
         CONSTRAINT a2advisors_isActive_chk CHECK(isActive IN(1, 0)),  
@@ -116,7 +122,7 @@ CREATE TABLE a2countries (
     countryCode     CHAR(2),
     countryName     VARCHAR2(56),
     continent       CHAR(2),
-    isActive        INTEGER    DEFAULT 1,
+    isActive        INTEGER    DEFAULT 0,
         
         CONSTRAINT a2countries_countryCode_pk PRIMARY KEY(countryCode),
         CONSTRAINT a2countries_countryName_unq UNIQUE(countryName),
@@ -131,7 +137,7 @@ CREATE TABLE a2courses (
     courseCode      VARCHAR2(8),
     courseName      VARCHAR2(50)    NOT NULL,
     isAvailable     INTEGER         DEFAULT 1 NOT NULL,
-    description     VARCHAR2(38),
+    description     VARCHAR2(256),
     
         CONSTRAINT a2courses_courseCode_pk PRIMARY KEY(courseCode),
         CONSTRAINT a2courses_isAvailable_chk CHECK(isAvailable IN(1, 0))
@@ -183,7 +189,7 @@ CREATE TABLE a2professors (
 
     empID       INTEGER,
     deptCode    VARCHAR2(16),
-    isActive    INTEGER DEFAULT 1,
+    isActive    INTEGER DEFAULT 0,
     
         CONSTRAINT a2professors_empID_pk PRIMARY KEY(empID),
         CONSTRAINT a2professors_empID_fk FOREIGN KEY(empID)
@@ -213,13 +219,8 @@ CREATE TABLE a2sections (
             REFERENCES a2professors(empID)
 );
 
-
--- constraint names for this table were a little too long...
--- I was forced to shorten the identifiers
-
--- for ex:
--- instead of: a2jnc_students_courses_isActive_req
--- it was changed to: a2stud_courses_isActive_req
+COMMENT ON COLUMN a2sections.sectionID
+IS 'Primary key. It is a combination of the termCode, courseCode, and sectionLetter in that order.';
 
 Prompt ******  Creating a2jnc_students_sections  table ..
 
@@ -227,7 +228,7 @@ CREATE TABLE a2jnc_students_sections (
 
     sectionID       CHAR(11),
     studentID       INTEGER,
-    mark            INTEGER,
+    gradeObtained   INTEGER,
     isActive        INTEGER DEFAULT 0 NOT NULL,
 
         CONSTRAINT a2stud_sections_pk PRIMARY KEY(sectionID, studentID),
@@ -257,6 +258,14 @@ CREATE TABLE a2jnc_prog_courses (
 
 );
 
+-- NOTE: We have decided to place the field in the a2jnc_prog_courses instead of the a2courses table
+-- the reason is multiple programs can have the same course as a requirement but at different terms
+COMMENT ON COLUMN a2jnc_prog_courses.term_req
+IS 'Indicates the term when a required course for a program is expected to be completed by a student';
+
+COMMENT ON COLUMN a2jnc_prog_courses.isActive
+IS 'Indicates whether or not the course is still part of the required courses list for a specific program';
+
 Prompt ******  Creating a2jnc_prog_students table ....
 
 CREATE TABLE a2jnc_prog_students (
@@ -274,189 +283,185 @@ CREATE TABLE a2jnc_prog_students (
        
 );
 
--- TODO: add descriptions for each course or change to pre-reqs or something else
+Prompt Semester 1 courses(CPD and CPA)
 -- courseCode, courseName, isAvailable, description
 
-Prompt Semester 1 courses(CPD and CPA)
-
 INSERT INTO a2courses VALUES (
-	'IPC144', 'Introduction to Programming Using C', 1, NULL
+	'IPC144', 'Introduction to Programming Using C', 1, 'The C programming language, which is widely used and forms the syntactical basis for object-oriented languages is used to introduce problem analysis, algorithm design, and program implementation.'
 );
 
 INSERT INTO a2courses VALUES (
-	'APC100', 'Applied Professional Communications', 1, NULL
+	'APC100', 'Applied Professional Communications', 1, 'This course focuses on self-awareness, group work, team building, interpersonal communication, presentation skills, conflict, and time management with applications to industry-specific settings.'
 );
 
 INSERT INTO a2courses VALUES (
-	'COM101', 'Communicating Across Contexts', 1, NULL
+	'COM101', 'Communicating Across Contexts', 1, 'Students will cultivate an awareness of communication concepts by analyzing how they are used in a variety of texts and contexts, and they will apply these concepts strategically in their own writing.'
 );
 
 INSERT INTO a2courses VALUES (
-	'CPR101', 'Computer Principles for Programmers', 1, NULL
+	'CPR101', 'Computer Principles for Programmers', 1, 'Students learn how modern computer systems implement process control, multitasking, virtualization, file storage, and network communications.'
 );
 
 INSERT INTO a2courses VALUES (
-	'ULI101', 'Introduction to UNIX/Linux and the Internet', 1, NULL
+	'ULI101', 'Introduction to UNIX/Linux and the Internet', 1, 'Students will learn to work in a Linux environment using the shell, configure their login accounts, manipulate data stored in files, use Linux commands and utilities, and write simple shell scripts.'
 );
 
 INSERT INTO a2courses VALUES (
-    'EAC149', 'English and Communications', 1, NULL
+    'EAC149', 'English and Communications', 1, 'Students will expand their vocabulary and learn how to express themselves more clearly and persuasively through analyzing texts, writing paragraphs and short essays; and participating in class discussions.'
 );
 
 Prompt Semester 2 courses(CPD and CPA)
 
 INSERT INTO a2courses VALUES (
-	'DBS201', 'Introduction to Database Design and SQL', 1, NULL
+	'DBS201', 'Introduction to Database Design and SQL', 1, 'Students will be presented with a methodology for relational database design using Entity Relationship Diagrams and normalization of data. Students will be introduced to a subset of SQL.'
 );
 
 INSERT INTO a2courses VALUES (
-	'DCF255', 'Data Communications Fundamentals', 1, NULL
+	'DCF255', 'Data Communications Fundamentals', 1, 'Using well-known and widely-used Internet applications and standard networking technology as examples, students will study and learn topics that explain how distributed applications work on a network.'
 );
 
 INSERT INTO a2courses VALUES (
-	'OOP244', 'Introduction to Object Oriented Programming', 1, NULL
+	'OOP244', 'Introduction to Object Oriented Programming', 1, 'Using the C++ programming language to introduce object-oriented programming the student learns to build reusable objects, encapsulate data and logic in a class, inheritance and implementing polymorphism.'
 );
 
 INSERT INTO a2courses VALUES (
-	'WEB222', 'Web Programming Principles', 1, NULL
+	'WEB222', 'Web Programming Principles', 1, 'Students learn JavaScript and the Document Object Model. The Hypertext Markup Language defines structure and content. To modify the appearance and format of a document, students learn to apply Cascading Style Sheets.'
 );
 
 
 Prompt Semester 3 courses(CPD and CPA)
 
 INSERT INTO a2courses VALUES (
-	'DBS301', 'Database Design || and SQL Using Oracle', 1, NULL
+	'DBS301', 'Database Design II and SQL Using Oracle', 1, 'This subject continues the study of database design and SQL begun in DBS201. Students will learn the entire set of SQL statements using the Oracle DBMS.'
 );
 
 INSERT INTO a2courses VALUES (
-	'OOP345', 'Object-Oriented Software Development Using C++', 1, NULL
+	'OOP345', 'Object-Oriented Software Development Using C++', 1, 'This subject expands the skill-set in object-oriented programming and introduces the student to threaded programming.  The student learns to model relationships between classes using containers.'
 );
 
 INSERT INTO a2courses VALUES (
-	'SYS366', 'Requirements Gathering Using OO Models', 1, NULL
+	'SYS366', 'Requirements Gathering Using OO Models', 1, 'Students will be introduced to system development life cycles, interface design, and will learn how to use research, observation, interviews, prototypes and feedback to gather stakeholder requirements.'
 );
 
 INSERT INTO a2courses VALUES (
-	'WEB322', 'Web Programming Tools and Framework', 1, NULL
+	'WEB322', 'Web Programming Tools and Framework', 1, 'This course teaches students to design and create simple web applications and services, in JavaScript, using widely-used and powerful tools and frameworks.'
 );
 
 Prompt Semester 3 course (CPA)
 
 INSERT INTO a2courses VALUES (
-    'WTP100', 'Work Term Preparation', 1, NULL
+    'WTP100', 'Work Term Preparation', 1, 'This course for WIL students prepares students to job search for their co-op terms. Students will reflect on their skills, attitudes, and expectations and evaluate and interpret available opportunities in the workplace.'
 );
 
--- TODO: add the rest of the CPA program
 Prompt Semester 4 Courses(CPD and CPA)
 
 INSERT INTO a2courses VALUES (
-	'BCI433', 'IBM Business Computing', 1, NULL
+	'BCI433', 'IBM Business Computing', 1, 'Students will utilize IBM i tools to create business applications. These applications will be developed using the DB2 relational database, Control Language commands and programming, and the RPGLE programming language.'
 );
 
 INSERT INTO a2courses VALUES (
-	'EAC397', 'Business Report Writing', 1, NULL
+	'EAC397', 'Business Report Writing', 1, 'Through team and individual projects, students will learn the essentials of career management, as well as practice the skills they will need in the workplace to communicate effectively.'
 );
 
 INSERT INTO a2courses VALUES (
-	'EAC594', 'Business Communication for the Digital Workplace', 1, NULL
+	'EAC594', 'Business Communication for the Digital Workplace', 1, 'This course will help you learn the principles, practices, and tools for communicating effectively in the workplace using cases and/or projects.'
 );
 
 INSERT INTO a2courses VALUES (
-	'JAC444', 'Introduction to Java for C++ Programmers', 1, NULL
+	'JAC444', 'Introduction to Java for C++ Programmers', 1, 'Topics include OOP, lambda expressions, functional interfaces, threads, exceptions, graphical user interface programming with Java FX, I/O, networking, client-server programming, servlets, and database access via JDBC.'
 );
 
 Prompt Semester 4 professional option (CPD)
 
 INSERT INTO a2courses VALUES (
-	'UNX511', 'UNIX Systems Programming', 1, NULL
+	'UNX511', 'UNIX Systems Programming', 1, 'This subject explores UNIX at a technical level. The primary focus will be system and network programming using C. Students will also learn advanced scripting techniques and the use of development tools and utilities.'
 );
 
 Prompt Semester 4 required courses (CPA)
 
 INSERT INTO a2courses VALUES (
-    'WEB422', 'Web Programming for Apps and Services', 1, NULL
+    'WEB422', 'Web Programming for Apps and Services', 1, 'This is the third course in the web programming course sequence. Students learn to design and create moderately complex web applications and services that can be deployed at scale.'
 );
 
 INSERT INTO a2courses VALUES (
-    'SYS466', 'Analysis and Design Using OO Models', 1, NULL
+    'SYS466', 'Analysis and Design Using OO Models', 1, 'Students will learn how to use object oriented analysis and design techniques to create software models of business systems using the Unified Modeling Language (UML) and the Rational Rose modeling tool.'
 );
 
 INSERT INTO a2courses VALUES (
-    'CPA331', 'Computer Programming and Analysis, Co-op', 1, NULL
+    'CPA331', 'Computer Programming and Analysis, Co-op', 1, 'Students will apply skills learned in the academic setting and gain new workplace skills by interacting with industry professionals to develop and expand their critical thinking, problem-solving and decision-making skills.'
 );
 
 Prompt Semester 5 required courses (CPA)
 
 INSERT INTO a2courses VALUES (
-    'PRJ566', 'Project Planning and Management', 1, NULL
+    'PRJ566', 'Project Planning and Management', 1, 'Project management concepts include scope development and management, creation of work breakdown structures, including task dependencies, and cost benefit analysis using return on investment and payback.'
 );
 
 --TODO: If Henry wants to add his own preferred courses
 Prompt Semester 5 professional option (CPA)
 
 INSERT INTO a2courses VALUES (
-    'DBS501', 'Stored Procedures Using Oracles PL/SQL', 1, NULL
+    'DBS501', 'Stored Procedures Using Oracles PL/SQL', 1, 'This subject uses Oracle PL/SQL language to code PL/SQL blocks, procedures, functions, packages, and database triggers for applications developed using Oracle relational databases.'
 );
 
 INSERT INTO a2courses VALUES (
-    'DBS565', 'Database Connectivity Using Java', 1, NULL
+    'DBS565', 'Database Connectivity Using Java', 1, 'The student will be introduced to connectivity issues that business deals with in todays environment, in creating a GUI front end to a back-end database.'
 );
 
 INSERT INTO a2courses VALUES (
-    'VBA544', 'Visual Basic', 1, NULL
+    'VBA544', 'Visual Basic', 1, 'Visual Basic (VB) changed the way we develop Windows applications on the personal computer. VB is the first of the Rapid Application Development (RAD) tools, and continues to evolve with the recent release of the .NET framework.'
 );
 
 INSERT INTO a2courses VALUES (
-    'MAP523', 'Mobile App Development - iOS', 1, NULL
+    'MAP523', 'Mobile App Development - iOS', 1, 'Students will learn the foundations of programming applications for the Apple iOS operating system and become proficient with the development tool environment, and create graphical end-user iOS applications using MVC design pattern.'
 );
 
 
 Prompt Semester 6 required courses (CPA)
 
 INSERT INTO a2courses VALUES (
-    'PRJ666', 'Project Implementation', 1, NULL
+    'PRJ666', 'Project Implementation', 1, 'As part of a team, students will plan and manage the development of an actual system using project planning, system design, system implementation, and unit and system testing methodologies.'
 );
 
---TODO: If Henry wants to add his own preferred courses
 Prompt Semester 6 professional option (CPA)
 
 INSERT INTO a2courses VALUES (
-    'MAP524', 'Mobile App Development - Android', 1, NULL
+    'MAP524', 'Mobile App Development - Android', 1, 'Student will be familiarized with all aspects of planning, developing and testing mobile applications for the Android platform using the Java programming language, as well as achieving effective interaction on mobile devices.'
 );
 
 INSERT INTO a2courses VALUES (
-    'WEB524', 'Web Programming Using ASP.NET', 1, NULL
+    'WEB524', 'Web Programming Using ASP.NET', 1, 'Concepts, technical skills, and business knowledge required to develop data-driven web sites hosted on the Microsoft Web Platform. The course will focus on server-side ASP.NET programming technologies and the C# language.'
 );
 
 INSERT INTO a2courses VALUES (
-    'DBA625', 'Database Administration', 1, NULL
+    'DBA625', 'Database Administration', 1, 'The student will learn how the DBMS manages the data and controls such as recovery, locking and transaction logging and performance tuning.'
 );
 
 INSERT INTO a2courses VALUES (
-    'GAM537', 'Game Development Fundamentals', 1, NULL
+    'GAM537', 'Game Development Fundamentals', 1, 'This subject will teach students the principles of game design and give them the opportunity to create a game using an existing game engine.'
 );
 
 Prompt General Education Courses
 
 INSERT INTO a2courses VALUES (
-    'CAN190', 'Introduction to Canadian Politics', 1, NULL
+    'CAN190', 'Introduction to Canadian Politics', 1, 'Political theorists have argued that Canada is one of the most successful democracies in the world. Yet, Canada is a country of contradictions. The historical, social and political foundations of the Canadian political process are examined.'
 );
 
 INSERT INTO a2courses VALUES (
-    'NAT101', 'Is There Life Beyond Earth?', 1, NULL
+    'NAT101', 'Is There Life Beyond Earth?', 1, 'This subject introduces students to the science of Astronomy. They will gain insights into ways that physical forces have shaped the environments of Earth and neighbouring planets.'
 );
 
 INSERT INTO a2courses VALUES (
-    'SOC135', 'Global Economic Issues', 1, NULL
+    'SOC135', 'Global Economic Issues', 1, 'Global Economic Issues is designed to introduce the student to the key issues behind our complex and changing world from a social, political and economic point of view.'
 );
 
 Prompt Employees insertions
 -- empID, firstName, lastName, prefix, suffix, isActive,
 -- sin, dob, email, phone
 
--- unknown prof, required for couses we have not taken yet
+-- unknown prof, required for most couses we have not taken yet
 INSERT INTO a2employees VALUES (
-    0, 'Un', 'known', NULL, NULL, 0, 0, 
+    0, 'Unknown', 'Unknown', NULL, NULL, 0, 0, 
         to_date('1970-01-01', 'yyyy-mm-dd'), '?',
         '0'
 );
@@ -924,7 +929,6 @@ INSERT INTO a2term VALUES (
         to_date('2020-04-17', 'yyyy-mm-dd')
 );
 
--- may the 4th be with you
 INSERT INTO a2term VALUES (
     2005, 'Summer 2020', to_date('2020-05-04', 'yyyy-mm-dd'),
         to_date('2020-08-14', 'yyyy-mm-dd')
@@ -1074,7 +1078,6 @@ INSERT INTO a2sections VALUES (
     '1809EAC149A', 'A', 'EAC149', 1809, 222777888
 );
 
---TODO: ASK HENRY WHAT SECTION COM101 CAUSE I DROPPED IT
 INSERT INTO a2sections VALUES (
     '1809COM101P', 'P', 'COM101', 1809, 222777888
 );
@@ -1386,7 +1389,6 @@ INSERT INTO a2students VALUES (
         'M', 'ndefranco@myseneca.ca', 'IT', '111.222.3333', 888999000
 );
 
--- TODO: requires modifications! Done???
 INSERT INTO a2students VALUES (
     140230186, 'Alex', 'Hai', to_date('1990-10-18', 'yyyy-mm-dd'),
         'M', 'amchai@myseneca.ca', 'CA', '222.333.4444', 888999000
@@ -1424,8 +1426,7 @@ INSERT INTO a2jnc_prog_students VALUES (
 
 
 Prompt Junction Students Sections Insertions
-
--- sectionID, studentID, mark, isActive
+-- sectionID, studentID, gradeObtained, isActive
 
 Prompt Some guy's insertions
 
@@ -1663,12 +1664,7 @@ INSERT INTO a2jnc_students_sections VALUES (
 INSERT INTO a2jnc_students_sections VALUES (
     '1909WTP100C', 139335178, 100, 1
 );
-/*
--- TODO: Chinese Elective
-INSERT INTO a2jnc_students_sections VALUES (
-    '1909_______', 139335178, 100, 1
-);
-*/
+
 Prompt Inserting Henry Future Courses
 
 INSERT INTO a2jnc_students_sections VALUES (
@@ -1714,12 +1710,20 @@ INSERT INTO a2jnc_students_sections VALUES (
     '1901DBS201D', 139335178, 99, 0
 );
 
-/*
 INSERT INTO a2jnc_students_sections VALUES (
-    'elective___', 139335178, 99, 0
+    '1809COM101P', 139335178, 84, 0
 );
-*/
--- TODO: add/revoke permissions...
+
+-- This procedure accepts 2 arguments, the user name of a user and 
+-- an integer specifying the action taken
+
+-- if opt is equal to 1, the procedure simply grants all DML permissions 
+-- on all tables with the a2 prefix to that user
+
+-- if opt is equal to anything else, the procedure simply revokes all DML 
+-- permissions on all tables with the a2prefix from that user
+
+Prompt Creating CREATE_REMOVE_GOD procedure
 
 CREATE OR REPLACE PROCEDURE CREATE_REMOVE_GOD(name IN VARCHAR2, opt IN INTEGER) AS 
 
@@ -1761,6 +1765,14 @@ REVOKE ALL
     ON user_objects
     FROM PUBLIC;
 
+/*
+
+This part was only meant to be run by Nicholas, who was responible for granting permissions to others.
+This part will not work if you ran it as you would be granting permissions on yourself which is not allowed.
+
+This part is only here for proof that permissions were granted as requested by the assignment requiredments
+
+
 Prompt Granting DML permissions to Group Members and Clint
 
 BEGIN
@@ -1772,69 +1784,169 @@ BEGIN
 END;
 /
 
-SELECT * FROM user_tab_privs;
+*/
+
+-- View 1
+
+/*
+
+For this first view, we have decided to use PIVOT. PIVOT allowed the data to 
+be printed in a more readable form rather than displaying the data in the 
+regular list form. 
+
+However, the drawback of using PIVOT, is that we had to tell it how many columns 
+and give each of them names manually. It cannot determine this automatically.
+
+We have decided to have it display all the subjects starting from our first term
+to the current term.
+
+*/
+
+-- NOTE: even though we are not calculating the sum of anything here, 
+-- PIVOT requires an aggregate function
+
+Prompt Creating View 1
 
 CREATE OR REPLACE VIEW a2vwtranscript AS (
-    SELECT * 
+
+    SELECT *
         FROM (
-            SELECT firstName || ' ' || lastName AS "Name", courseCode, mark
+            SELECT firstName || ' ' || lastName AS "Name", courseCode, gradeObtained
                 FROM a2students JOIN a2jnc_students_sections USING(studentID)
                     JOIN a2sections USING(sectionID)
         )
         PIVOT (
-            sum(mark)
+            sum(gradeObtained)
             FOR courseCode
             IN (
+                -- Aliases were required to remove single quotes from output
                 'IPC144' AS IPC144, 'ULI101' AS ULI101, 'CPR101' AS CPR101, 'COM101' AS COM101, 
                 'OOP244' AS OOP244, 'WEB222' AS WEB222, 'DBS201' AS DBS201, 'DCF255' AS DCF255,
                 'OOP345' AS OOP345, 'WEB322' AS WEB322, 'DBS301' AS DBS301, 'SYS366' AS SYS366
             )
-        )
+        ) 
+        
 );
 
+Prompt Using View 1
+
 SELECT * FROM a2vwtranscript;
+
+/*
+  
+Original solution for View 1
    
-SELECT firstName || ' ' || lastName AS "Name", courseCode, mark
-    FROM a2students JOIN a2jnc_students_sections USING(studentID)
-        JOIN a2sections USING(sectionID);
-   
-   
+CREATE OR REPLACE VIEW a2vwtranscript AS (
 
-/*  
+    SELECT firstName || ' ' || lastName AS "Name", courseCode, gradeObtained
+        FROM a2students JOIN a2jnc_students_sections USING(studentID)
+            JOIN a2sections USING(sectionID);
+            
+);
 
-SELECT courseCode, mark
-    FROM a2students JOIN a2jnc_students_sections USING(studentID)
-        JOIN a2sections USING(sectionID)
-    WHERE studentID = 106732183;
+*/
+
+-- View 2
+Prompt Creating View 2
+CREATE OR REPLACE VIEW a2vwSectionStudents AS (
+    SELECT firstName ||' ' || lastName AS "Student Name",
+            studentID AS "Student ID",
+            sectionID AS "Section ID"
+        FROM a2sections JOIN a2jnc_students_sections USING (sectionID)
+            JOIN a2students USING (studentid)
+        WHERE upper(termCode) LIKE upper('%&termCode_yymm%')
+            AND upper(courseCode) LIKE upper('%&courseCode_ex_WEB322%')
+            AND upper(sectionLetter) LIKE upper('%&sectionLetter_ex_I%')
+);        
+
+Prompt Using View 2
+SELECT * FROM a2vwSectionStudents;
+
+-- View 3
+Prompt Creating View 3
+CREATE OR REPLACE VIEW a2vwSectionAverage AS (
+    SELECT sectionID AS "Section ID",
+            round(avg(gradeObtained),2) AS "Section Average",
+            (
+            
+                SELECT firstName || ' ' || lastName 
+                    FROM a2employees e 
+                    WHERE e.empID = a2sections.profID
+            
+            ) AS "Professor Name",
+            profID AS "Professor ID"
+        FROM a2jnc_students_sections JOIN a2sections USING (sectionID)
+            JOIN a2employees ON a2employees.empID = a2sections.profID
+            JOIN a2term USING(termCode)
+        WHERE startDate < sysdate
+        GROUP BY sectionID, profID    
+);    
+
+Prompt Using View 3
+SELECT * FROM a2vwSectionAverage
+    ORDER BY "Section ID";
     
-    
+-- View 4
+Prompt Creating View 4
 
-SELECT firstName || ' ' || lastName AS "Name", courseCode, round(avg(mark), 2)
-    FROM a2students JOIN a2jnc_students_sections USING(studentID)
-        JOIN a2sections USING(sectionID)
-    GROUP BY rollup(courseCode, firstName || ' ' || lastName);
+CREATE OR REPLACE VIEW a2vwProgramCoreCourses AS (
+    SELECT progCode AS "Program",
+            courseCode AS "Course Code",
+            courseName AS "Required Course",
+            term_Req AS "Term Required"
+        FROM a2jnc_prog_courses JOIN a2courses USING (courseCode)
+);
 
-SELECT e.firstName, s.firstName, round(avg(mark), 2)
-    FROM a2students s JOIN a2jnc_students_sections ss ON s.studentID = ss.studentID
-        JOIN a2sections sec ON ss.sectionID = sec.sectionID
-        JOIN a2professors p ON sec.profID = p.empID
-        JOIN a2employees e ON e.empID = p.empID
-    WHERE sec.sectionID = 16
-    GROUP BY e.firstName, s.firstName;
-    
-SELECT * FROM a2sections;
+Prompt Using View 4
+SELECT * FROM a2vwProgramCoreCourses
+    ORDER BY "Program", "Term Required";
+        
+        
+-- View 5
+Prompt Creating View 5
 
-SELECT firstName || ' ' || lastName AS "Name", courseCode, sectionLetter, round(avg(mark), 2) AS "AVG"
-    FROM a2employees e JOIN a2professors p ON p.empID = e.empID
-        JOIN a2sections s ON p.empID = s.profID
-        JOIN a2jnc_students_sections j ON j.sectionID = s.sectionID
-    WHERE s.termCode = 1
-    GROUP BY courseCode, sectionLetter, firstName || ' ' || lastName
-    ORDER BY "Name";
+CREATE OR REPLACE VIEW a2vwTermStats AS (
+    SELECT courseCode ||' - '|| courseName AS "Course",
+            sectionLetter AS "Section",
+            firstName ||' '|| lastName AS "Professor Name",
+            count(studentID) AS "Students Enrolled"
+        FROM a2employees JOIN a2sections ON a2employees.empID = a2sections.profID
+            RIGHT JOIN a2courses USING (courseCode)
+            LEFT JOIN a2jnc_students_sections USING (sectionID)
+        WHERE termCode LIKE '%&termCode_yymm%'
+        GROUP BY termCode, firstName ||' '|| lastName, courseCode ||' - '|| courseName, sectionLetter
+);        
+
+Prompt Using View 5
+SELECT * FROM a2vwTermStats
+    ORDER BY "Course", "Section";
     
-SELECT (SELECT progName FROM a2programs WHERE progCode = j.progCode) AS "ProgName", 
-        CourseCode
-    FROM a2jnc_prog_courses j;
+/*
+
+Another method for view 5
+This CREATE VIEW command works, but it issues a warning
+that we were never able to solve.
+
+CREATE OR REPLACE VIEW a2vwTermStats AS (
+
+    SELECT courseCode ||' - '|| courseName AS "Course",
+            sectionLetter AS "Section",
+            firstName ||' '|| lastName AS "Professor Name",
+            NVL((  
+            
+                SELECT count(studentID)
+                    FROM a2jnc_students_sections
+                    WHERE sectionID = a2sections.sectionID
+                    GROUP BY sectionID
+                    
+            ), 0) AS "Students Enrolled"
+        FROM a2employees JOIN a2sections ON a2employees.empID = a2sections.profID
+            JOIN a2courses USING (courseCode)
+        WHERE termCode LIKE '%&termCode%'
+    
+);        
+
+SELECT * FROM a2vwtermstats;
 
 */
 
