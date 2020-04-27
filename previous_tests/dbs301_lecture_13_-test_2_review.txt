@@ -1,0 +1,82 @@
+DBS301 Mid-term Test #2
+
+1.a
+create table twtempUSdepartments AS (
+	Select d.department_id,
+		d.department_name,
+e.firstname || ' ' || e.lastname,
+l.city,
+l.state_provice
+from departments d
+	Full Join locations l using (location_id)
+	Full JOin employees e using (department_id)
+Where Upper (country_id) = 'US');
+
+Select * from t2tempUSdepartments;
+
+1.b
+select distinct city from locations where upper(country_id) = 'US'
+Union ALL
+Select distinct city from locations where upper(country_id) = 'CA'
+Union ALL
+Select * from (
+	select distinct city
+from locations
+where upper(country_id) Not IN ('CA', 'US')
+Order by city);
+
+select city
+from locations order by decode(country_id, 'CA', 1, 'US', 2), city
+
+2.
+Alter table locations
+ADD constrint location_country_fk Foreign KEY (country_id)
+References countries(country_id);
+
+3.
+insert int ocountries values('ES', 'Spain', 1);
+insert into locations values(98,2000 Simcoe St. N', L1G0c5', Oshawa, 'ON', 'CA');
+(second insert)
+
+4.
+Commit;
+update t2BankAccounts
+	set account_balance = account_balance -450 --withdrawl happens first
+	Where account_number = 4567; --has to be account number 
+savepoint withdrawal;
+update t2BankAccounts
+	set account_balance = account_balance + 450 --unless there is error msg, everything will run, even if it does nothing
+	where account_number = 4561;
+savepoint deposit;
+
+--transaction fails due to insufficient funds in the S account
+rollback;
+
+5.
+create dat coach
+create datclient
+create datcourse
+
+creat datclass
+addFK for coursecode to datCourse
+
+create jncClassStudents
+Add FK for clientID to datClient
+Add FK for classCode to datClass
+
+create jncCoach Classess
+Add fk for coachID to dat Coach
+Add FK for for classCode to datClass
+
+6.
+create table jncCoachClassess(
+teachingID integer primary key,
+coachID integer
+classCode Integer,
+Role VarChar(20));
+
+Alter table jncCoachClasses
+Add Constranint jncCoachClasses_coachID_FK Foreign Key coachID References datCoach(coachID);
+
+Alter table jncCoachClasses
+Add Constraint jncCoachClasses_FlassCode_FK Foreign Key classCode References datClass(classCode);
